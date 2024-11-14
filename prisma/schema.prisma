@@ -1,0 +1,288 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                      String                   @id @default(uuid())
+  username                String                   @unique @db.VarChar(30)
+  name                    String                   @db.VarChar(100)
+  email                   String                   @unique @db.VarChar(255)
+  bio                     String                   @db.Text
+  profilePictureUrl       String                   @db.Text
+  coverPhotoUrl           String?                  @db.Text
+  website                 String?                  @db.Text
+  websiteName             String?                  @db.VarChar(255)
+  isActive                Boolean                  @default(true)
+  verifiedDate            DateTime?
+  isVerified              Boolean                  @default(false)
+  isSuspended             Boolean                  @default(false)
+  suspendCount            Int                      @default(0)
+  suspendedDate           DateTime?
+  suspendReason           String?                  @db.Text
+  lastLogin               DateTime?                @default(now())
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  googleId                String?                  @db.Text
+  password                String?                  @db.VarChar(255)
+  twoFactorAuthentication Boolean                  @default(false)
+  emailVerifications      EmailVerification[]
+  passwordResets          PasswordReset[]
+  posts                   Post[]
+  metrics                 UserMetrics?
+  comments                Comment[]
+  likes                   Like[]
+  bookmarks               Bookmark[]
+  postViews               View[]
+  notifications           Notification[]
+  notificationsTriggered  Notification[]           @relation("NotificationTrigger")
+  conversationsAsUser1    Conversation[]           @relation("ConversationUser1")
+  conversationsAsUser2    Conversation[]           @relation("ConversationUser2")
+  messagesSent            Message[]                @relation("SentMessages")
+  messagesReceived        Message[]                @relation("ReceivedMessages")
+  conversationStatuses    ConversationUserStatus[]
+  followers               Follow[]                 @relation("following")
+  following               Follow[]                 @relation("follower")
+
+  @@index([username, email])
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("follower", fields: [followerId], references: [id])
+  following User @relation("following", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
+  @@index([followingId])
+  @@index([followerId])
+}
+
+model EmailVerification {
+  id        String    @id @default(uuid())
+  token     String    @unique @db.Char(6)
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@index([id, token])
+}
+
+model PasswordReset {
+  id        String    @id @default(uuid())
+  token     String    @unique @db.Char(6)
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@index([id, token])
+}
+
+model PostMedia {
+  id            String    @id @default(uuid())
+  mediaType     MediaType
+  mediaUrl      String    @db.Text
+  mediaPublicId String?   @db.VarChar(255)
+  createdAt     DateTime  @default(now())
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id])
+
+  @@index([id, postId])
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  content   String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isEdited  Boolean  @default(false)
+  audience  Audience @default(PUBLIC)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  media     PostMedia[]
+  comments  Comment[]
+  metrics   PostMetrics?
+  likes     Like[]
+  bookmarks Bookmark[]
+  views     View[]
+
+  @@index([id, userId])
+}
+
+model UserMetrics {
+  id             String @id @default(uuid())
+  userId         String @unique
+  followersCount Int    @default(0)
+  followingCount Int    @default(0)
+  postCount      Int    @default(0)
+  user           User?  @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model PostMetrics {
+  id             String @id @default(uuid())
+  postId         String @unique
+  likesCount     Int    @default(0)
+  commentsCount  Int    @default(0)
+  bookmarksCount Int    @default(0)
+  viewsCount     Int    @default(0)
+  post           Post?  @relation(fields: [postId], references: [id])
+
+  @@index([postId])
+}
+
+model Comment {
+  id              String    @id @default(uuid())
+  content         String    @db.Text
+  createdAt       DateTime  @default(now())
+  postId          String
+  userId          String
+  parentCommentId String?
+  parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id])
+  replies         Comment[] @relation("CommentReplies")
+  likes           Like[]
+  post            Post      @relation(fields: [postId], references: [id])
+  user            User      @relation(fields: [userId], references: [id])
+
+  @@index([postId, userId])
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  userId    String
+  postId    String?
+  commentId String?
+  likeType  LikeType
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post?    @relation(fields: [postId], references: [id])
+  comment   Comment? @relation(fields: [commentId], references: [id])
+
+  @@index([userId, postId])
+  @@index([userId, commentId])
+}
+
+model Bookmark {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  userId    String
+  postId    String
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+}
+
+model View {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  userId    String
+  postId    String
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@index([userId, postId])
+}
+
+model Notification {
+  id            String           @id @default(uuid())
+  isRead        Boolean          @default(false)
+  createdAt     DateTime         @default(now())
+  type          NotificationType
+  url           String
+  triggeredById String
+  userId        String
+  user          User             @relation(fields: [userId], references: [id])
+  triggeredBy   User             @relation("NotificationTrigger", fields: [triggeredById], references: [id])
+
+  @@index([userId])
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  user1Id   String
+  user2Id   String
+  createdAt DateTime @default(now())
+
+  user1 User @relation("ConversationUser1", fields: [user1Id], references: [id])
+  user2 User @relation("ConversationUser2", fields: [user2Id], references: [id])
+
+  messages Message[]
+
+  userStatuses ConversationUserStatus[]
+
+  @@index([user1Id, user2Id])
+}
+
+model ConversationUserStatus {
+  id             String       @id @default(uuid())
+  userId         String
+  conversationId String
+  isRead         Boolean      @default(false)
+  isDeleted      Boolean      @default(false)
+  user           User         @relation(fields: [userId], references: [id])
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  @@unique([userId, conversationId])
+  @@index([conversationId])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  content        String       @db.Text
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  isRead         Boolean      @default(false)
+  senderId       String
+  receiverId     String
+  conversationId String
+  isDeleted      Boolean      @default(false)
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id])
+  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  @@index([conversationId, createdAt])
+}
+
+enum Audience {
+  PUBLIC
+  FOLLOWERS
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum LikeType {
+  POST
+  COMMENT
+}
+
+enum NotificationType {
+  COMMENT
+  POST
+  LIKE
+  FOLLOW
+  SYSTEM
+  TAG
+}
