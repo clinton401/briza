@@ -50,7 +50,9 @@ export const RegisterForm: FC = () => {
         setSuccess(success); 
      
       if(redirectUrl) {
-        push(redirectUrl)
+        setTimeout(() => {
+          push(redirectUrl);
+        }, 1500);
       }
     }catch(error) {
       setSuccess(undefined);

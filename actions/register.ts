@@ -17,7 +17,6 @@ export const register = async (
 ) => {
   const validatedFields = RegisterSchema.safeParse(values);
   const userIp = await getUserIpAddress();
-  console.log(`IP address: ${userIp}`);
   if (!validatedFields.success) return createErrorResponse("Invalid fields");
 
   try {

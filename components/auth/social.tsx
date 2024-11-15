@@ -9,10 +9,9 @@ export const Social: FC = () => {
   const redirect = useGetRedirectUrl();
   const oauthHandler = () => {
     
-console.log("google sign in")
-    // signIn("google", {
-    //   callbackUrl:  DEFAULT_LOGIN_REDIRECT
-    // })
+    signIn("google", {
+      callbackUrl: redirect ? redirect : DEFAULT_LOGIN_REDIRECT
+    })
 
   }
   return (

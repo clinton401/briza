@@ -16,12 +16,12 @@ datasource db {
 
 model User {
   id                      String                   @id @default(uuid())
-  username                String?                   @unique @db.VarChar(30)
+  username                String?                  @unique @db.VarChar(30)
   name                    String                   @db.VarChar(100)
   email                   String                   @unique @db.VarChar(255)
-  bio                     String?                   @db.Text
-  profilePictureUrl       String?                   @db.Text
-  profilePicturePublicId  String?                   @db.Text
+  bio                     String?                  @db.Text
+  profilePictureUrl       String?                  @db.Text
+  profilePicturePublicId  String?                  @db.Text
   coverPhotoUrl           String?                  @db.Text
   coverPhotoPublicId      String?                  @db.Text
   website                 String?                  @db.Text
@@ -41,6 +41,7 @@ model User {
   twoFactorAuthentication Boolean                  @default(false)
   emailVerifications      EmailVerification[]
   passwordResets          PasswordReset[]
+  twoFA                   TwoFA[]
   posts                   Post[]
   metrics                 UserMetrics?
   comments                Comment[]
@@ -60,6 +61,8 @@ model User {
   @@index([username, email])
 }
 
+
+
 model Follow {
   id          String   @id @default(uuid())
   followerId  String
@@ -75,23 +78,33 @@ model Follow {
 }
 
 model EmailVerification {
-  id        String    @id @default(uuid())
-  token     String    @unique @db.Char(6)
+  id        String   @id @default(uuid())
+  token     String   @unique @db.Char(6)
   expiresAt DateTime
-  createdAt DateTime  @default(now())
-  userId    String    @unique 
-  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([id, token])
+}
+model TwoFA {
+  id        String   @id @default(uuid())
+  token     String   @unique @db.Char(6)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([id, token])
 }
 
 model PasswordReset {
-  id        String    @id @default(uuid())
-  token     String    @unique @db.Char(6)
+  id        String   @id @default(uuid())
+  token     String   @unique @db.Char(6)
   expiresAt DateTime
-  createdAt DateTime  @default(now())
-  userId    String    @unique 
-  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([id, token])
 }

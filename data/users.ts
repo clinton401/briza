@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import {genPasswordHash} from "@/lib/password-utils"
-
+import {hasAtLeastOneProperty} from "@/lib/random-utils";
 type UpdateUserData = {
     username?: string | null;
     name?: string;
@@ -23,7 +23,6 @@ type UpdateUserData = {
     createdAt?: Date;
     updatedAt?: Date;
     googleId?: string | null;
-    password?: string | null;
     twoFactorAuthentication?: boolean;
   };
   
@@ -57,31 +56,36 @@ export const findUnique = async(value: string, isId = false) => {
 
 }
 
-export const createUser = async(name: string, email: string, password: string) => {
-    try{
-        const hashedPassword = await genPasswordHash(password);
-       const newUser = await prisma.user.create({
+export const createUser = async (name: string, email: string, password?: string, extraData?: Partial<Omit<UpdateUserData, "name" | "email">>) => {
+    try {
+      const hashedPassword = password ? await genPasswordHash(password) : undefined;
+  
+     
+      const newUser = await prisma.user.create({
         data: {
-            name,
-            email: email.toLowerCase(),
-            password: hashedPassword
+          name,
+          email: email.toLowerCase(),
+          ...(hashedPassword && { password: hashedPassword }),
+          ...(extraData && extraData),
         },
         select: {
-            id: true,
-            name: true,
-            email: true
-        }
-       }) 
-
-       return newUser
-    }catch(error){
-        console.error(`Unable to create user: ${error}`);
-        return null
+          id: true,
+          name: true,
+          email: true,
+        },
+      });
+  
+      return newUser;
+    } catch (error) {
+      console.error(`Unable to create user: ${error}`);
+      return null;
     }
-}
+  };
+  
 export const updateUser = async (userId: string, data: UpdateUserData) => {
     try {
-        if(!data || Object.keys(data).length < 1) {
+        const isObjectWithAProperty = hasAtLeastOneProperty(data);
+        if(!data || !isObjectWithAProperty) {
             throw new Error("Object cannot be empty.")
         }
       const updatedUser = await prisma.user.update({
@@ -94,3 +98,26 @@ export const updateUser = async (userId: string, data: UpdateUserData) => {
       throw error
     }
   };
+
+  export const updatePassword = async(userId: string, password: string) => {
+    try{
+        const hashedPassword = await genPasswordHash(password);
+        const updatedUser = await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                password: hashedPassword
+            },
+            select: {
+                id: true,
+                email: true
+            }
+        });
+        return updatedUser;
+
+    } catch(error){
+        console.error(`Unable to update user password: ${error}`);
+        return null
+    }
+  }

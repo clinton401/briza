@@ -18,7 +18,6 @@ export const verifyEmail = async (
 ) => {
   const validatedFields = OtpSchema.safeParse(values);
   const userIp = await getUserIpAddress();
-  console.log(`IP address: ${userIp}`);
 
   if (!validatedFields.success) {
     return createErrorResponse("Invalid fields");

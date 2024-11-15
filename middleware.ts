@@ -5,18 +5,19 @@ import {
   DEFAULT_LOGIN_REDIRECT,
   authRoutes,
   publicRoutes,
+  apiAuthPrefix
 } from "@/routes";
 
 export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
-  
-  const isApiAuthRoute = !!authRoutes.find(route => nextUrl.pathname.startsWith(route));
+  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+  const isAuthRoute = !!authRoutes.find(route => nextUrl.pathname.startsWith(route));
   const isPublicRoute = !!publicRoutes.find(route => nextUrl.pathname.startsWith(route));
 const redirect  = isApiAuthRoute || nextUrl.pathname === DEFAULT_LOGIN_REDIRECT ? null:  nextUrl.pathname ;
   if (isApiAuthRoute) return;
 
-  if (!isLoggedIn && !isPublicRoute) {
+  if (!isLoggedIn && !isPublicRoute && !isAuthRoute) {
     return Response.redirect(
       new URL(
         `/login${redirect ? `?redirect=${encodeURIComponent(redirect)}`: ""}`,

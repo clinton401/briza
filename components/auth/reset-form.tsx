@@ -20,12 +20,21 @@ import { LoadingButton } from "@/components/auth/loading-button";
 import useGetRedirectUrl from "@/hooks/use-get-redirect-url";
 import { useRouter } from "next/navigation";
 import useIsTyping from "@/hooks/use-is-typing";
+import {reset} from "@/actions/reset";
+import useCountdown from "@/hooks/use-countdown";
+import {regenerateResetToken} from "@/actions/regenerate-reset-tokens";
+import { RegenerateButton } from "@/components/auth/regenerate-button";
 export const ResetForm: FC = () => {
   const [isPending, setIsPending] = useState(false);
   const [isNewEmailPending, setIsNewEmailPending] = useState(false);
   const [isCodeSent, setIsCodeSent] = useState(false);
   const { error, setError, success, setSuccess, isTyping, setIsTyping } =
     useIsTyping();
+    const {
+      isNewClicked: isResendClicked,
+      setIsNewClicked: setIsResendClicked,
+      countdown: resetCounter,
+    } = useCountdown();
   const redirect = useGetRedirectUrl();
   const { push } = useRouter();
   const form = useForm<z.infer<ReturnType<typeof ResetSchema>>>({
@@ -39,10 +48,73 @@ export const ResetForm: FC = () => {
   const resetHandler = async (
     values: z.infer<ReturnType<typeof ResetSchema>>
   ) => {
-    console.log(values);
-    setIsCodeSent(!isCodeSent);
+    try{
+      setIsPending(true);
+      setError(undefined); 
+      setSuccess(undefined);
+      const data = await reset(values, isCodeSent, redirect);
+      const {error, success, redirectUrl, isOtpSent} = data;
+    
+        setError(error); 
+    
+      
+        setSuccess(success); 
+        if(isOtpSent) {
+          setIsCodeSent(true);
+        }
+     
+      if(redirectUrl) {
+        setTimeout(() => {
+          push(redirectUrl);
+        }, 1500);
+      }
+     }catch(error) {
+      setSuccess(undefined);
+      setError("An unexpected error occurred.");
+      console.error(error)
+    } finally {
+      setIsPending(false);
+    }
   };
+  const regenerateCode = async() => {
+    const emailValue = form.watch('email');
+    if(!emailValue || typeof emailValue !== "string" ) {
+      setError("Invalid email");
+      
+      setSuccess(undefined);
+      return ;
+    }
+    try{
+      setIsNewEmailPending(true);
+      setIsResendClicked(false);
+      setError(undefined); 
+      setSuccess(undefined);
+     const data =  await  regenerateResetToken(emailValue);
+     const {error, success} = data;
+  
+     setError(error); 
+
+   
+     setSuccess(success); 
+    
+  if(success) {
+    setIsNewEmailPending(false);
+    setIsResendClicked(true);
+  } else {
+    setIsNewEmailPending(false);
+    setIsResendClicked(false);
+  }
+  
+     
+    } catch(error){
+console.error(error);
+setIsNewEmailPending(false);
+setIsResendClicked(false);
+    }
+  }
+
   return (
+    <div>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(resetHandler)} className="space-y-4">
         <FormField
@@ -117,5 +189,12 @@ export const ResetForm: FC = () => {
         />
       </form>
     </Form>
+    {isCodeSent &&  <div className="w-full gap-4 flex flex-col justify-center items-center pt-4">
+        <p className="text-xs w-full text-center ">Didn&apos;t send code yet?</p>
+
+    <RegenerateButton isNewEmailPending={isNewEmailPending || isPending} isResendClicked={isResendClicked} resendCode={regenerateCode} resetCounter={resetCounter} />
+   
+    </div>}
+    </div>
   );
 };
