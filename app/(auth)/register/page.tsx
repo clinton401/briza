@@ -1,13 +1,18 @@
 import {FC} from 'react'
 import { FormWrapper } from "@/components/auth/form-wrapper";
 import { RegisterForm } from '@/components/auth/register-form';
- const RegisterPage: FC = () => {
+ const RegisterPage: FC<{searchParams: {
+  redirect?: string
+}}> = async ({searchParams}) => {
+  const {redirect} = await searchParams;
   return (
     <FormWrapper
       title="Create an account"
       backButtonText="Already have an account?"
       backButtonLinkText="Sign in"
-      backButtonUrl="/login"
+      backButtonUrl={`/login${
+        redirect ? `?redirect=${encodeURIComponent(redirect)} ` : ""
+      }`}
       showSocial
     >
       <div className="w-full flex items-center justify-center gap-2">

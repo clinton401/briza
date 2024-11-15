@@ -4,15 +4,15 @@ import {FcGoogle} from "react-icons/fc"
 import {Button} from "@/components/ui/button"
 import {signIn} from "next-auth/react"
 import { DEFAULT_LOGIN_REDIRECT } from '@/routes'
-// import useGetRedirectUrl from "@/hooks/use-get-redirect-url";
+import useGetRedirectUrl from "@/hooks/use-get-redirect-url";
 export const Social: FC = () => {
-  // const redirect = useGetRedirectUrl();
+  const redirect = useGetRedirectUrl();
   const oauthHandler = () => {
     
-
-    signIn("google", {
-      callbackUrl:  DEFAULT_LOGIN_REDIRECT
-    })
+console.log("google sign in")
+    // signIn("google", {
+    //   callbackUrl:  DEFAULT_LOGIN_REDIRECT
+    // })
 
   }
   return (

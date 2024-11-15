@@ -1,0 +1,1 @@
+export const unknown_error = "An unknown error occurred. Please try again later"

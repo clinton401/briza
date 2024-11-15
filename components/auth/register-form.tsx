@@ -18,12 +18,15 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { LoadingButton } from "@/components/auth/loading-button";
 import useGetRedirectUrl from "@/hooks/use-get-redirect-url";
-
+import {register} from "@/actions/register"
+import useIsTyping from "@/hooks/use-is-typing";
+import {useRouter} from "next/navigation";
 export const RegisterForm: FC = () => {
     const [isPending, setIsPending] = useState(false);
-  const [error, setError] = useState<undefined | string>(undefined);
-  const [success, setSuccess] = useState<undefined | string>(undefined);
   const redirect = useGetRedirectUrl();
+  const { error, setError, success, setSuccess, isTyping, setIsTyping } =
+  useIsTyping();
+  const {push} = useRouter();
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
@@ -34,7 +37,28 @@ export const RegisterForm: FC = () => {
   });
 
   const registerHandler = async(values: z.infer<typeof RegisterSchema>) => {
-    console.log(values)
+    try{
+      setIsPending(true);
+      setError(undefined); 
+      setSuccess(undefined);
+      const data = await register(values, redirect);
+      const {error, success, redirectUrl} = data;
+  
+        setError(error); 
+ 
+      
+        setSuccess(success); 
+     
+      if(redirectUrl) {
+        push(redirectUrl)
+      }
+    }catch(error) {
+      setSuccess(undefined);
+      setError("An unexpected error occurred.");
+      console.error(error)
+    } finally {
+      setIsPending(false);
+    }
   }
     return (
         <Form {...form}>
@@ -46,7 +70,7 @@ export const RegisterForm: FC = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input  disabled={isPending} 
+                  <Input onInput={() => setIsTyping(true)}  disabled={isPending} 
                     placeholder="janesmith@example.com "
                     type="email"
                     {...field}
@@ -64,7 +88,7 @@ export const RegisterForm: FC = () => {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input  disabled={isPending}  placeholder="Jane smith " {...field} />
+                  <Input onInput={() => setIsTyping(true)}  disabled={isPending}  placeholder="Jane smith " {...field} />
                 </FormControl>
 
                 <FormMessage />
@@ -78,7 +102,7 @@ export const RegisterForm: FC = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input  disabled={isPending}  placeholder="******" type="password" {...field} />
+                  <Input onInput={() => setIsTyping(true)}  disabled={isPending}  placeholder="******" type="password" {...field} />
                 </FormControl>
 
                 <FormMessage />

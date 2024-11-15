@@ -19,12 +19,14 @@ import { FormSuccess } from "@/components/form-success";
 import { LoadingButton } from "@/components/auth/loading-button";
 import Link from "next/link";
 import useGetRedirectUrl from "@/hooks/use-get-redirect-url";
+
+import useIsTyping from "@/hooks/use-is-typing";
 export const LoginForm: FC = () => {
     const [is2FA, setIs2FA] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [isNewEmailPending, setIsNewEmailPending] = useState(false);
-  const [error, setError] = useState<undefined | string>(undefined);
-  const [success, setSuccess] = useState<undefined | string>(undefined);
+  const { error, setError, success, setSuccess, isTyping, setIsTyping } =
+    useIsTyping();
   const redirect = useGetRedirectUrl();
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
@@ -51,7 +53,8 @@ export const LoginForm: FC = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
+                  <Input 
+                  onInput={() => setIsTyping(true)}
                     placeholder="janesmith@example.com "
                     disabled={isPending || is2FA}
                     type="email"
@@ -70,7 +73,8 @@ export const LoginForm: FC = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input
+                  <Input 
+                  onInput={() => setIsTyping(true)}
                     placeholder="******"
                     disabled={isPending || is2FA}
                     type="password"
@@ -90,7 +94,8 @@ export const LoginForm: FC = () => {
                 <FormItem>
                   <FormLabel>Two-Factor Authentication Code</FormLabel>
                   <FormControl>
-                    <Input placeholder="******" disabled={isPending } {...field} />
+                    <Input 
+                    onInput={() => setIsTyping(true)} placeholder="******" disabled={isPending } {...field} />
                   </FormControl>
 
                   <FormMessage />

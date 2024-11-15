@@ -16,12 +16,14 @@ datasource db {
 
 model User {
   id                      String                   @id @default(uuid())
-  username                String                   @unique @db.VarChar(30)
+  username                String?                   @unique @db.VarChar(30)
   name                    String                   @db.VarChar(100)
   email                   String                   @unique @db.VarChar(255)
-  bio                     String                   @db.Text
-  profilePictureUrl       String                   @db.Text
+  bio                     String?                   @db.Text
+  profilePictureUrl       String?                   @db.Text
+  profilePicturePublicId  String?                   @db.Text
   coverPhotoUrl           String?                  @db.Text
+  coverPhotoPublicId      String?                  @db.Text
   website                 String?                  @db.Text
   websiteName             String?                  @db.VarChar(255)
   isActive                Boolean                  @default(true)
@@ -75,9 +77,9 @@ model Follow {
 model EmailVerification {
   id        String    @id @default(uuid())
   token     String    @unique @db.Char(6)
-  expiresAt DateTime?
+  expiresAt DateTime
   createdAt DateTime  @default(now())
-  userId    String
+  userId    String    @unique 
   user      User      @relation(fields: [userId], references: [id])
 
   @@index([id, token])
@@ -86,9 +88,9 @@ model EmailVerification {
 model PasswordReset {
   id        String    @id @default(uuid())
   token     String    @unique @db.Char(6)
-  expiresAt DateTime?
+  expiresAt DateTime
   createdAt DateTime  @default(now())
-  userId    String
+  userId    String    @unique 
   user      User      @relation(fields: [userId], references: [id])
 
   @@index([id, token])

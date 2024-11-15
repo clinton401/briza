@@ -37,3 +37,26 @@ export const OtpSchema = z.object({
     .max(6, { message: "OTP must be at most 6 characters" }),
 });
 
+
+export const ResetSchema = (isCodeSent: boolean) => z.object({
+  email: z.string()
+    .trim() 
+    .email({ message: "Please provide a valid email address" })
+    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, { message: "Invalid email format" }),
+  otp: z.string()
+    .trim() 
+    .min(6, { message: "OTP must be at least 6 characters long" })
+    .max(6, { message: "OTP must not exceed 6 characters" })
+    .optional()
+    .refine(val => isCodeSent ? !!val : true, {
+      message: "Verification code is required",
+    }),
+  newPassword: z.string()
+    .trim()
+    .min(6, { message: "Minimum 6 characters required" })
+    .optional()
+    .refine(val => isCodeSent ? !!val : true, {
+      message: "New password is required",
+    }),
+});
+

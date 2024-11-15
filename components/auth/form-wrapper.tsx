@@ -10,9 +10,14 @@ type FormWrapperProps = {
     backButtonText?: string;
     backButtonLinkText: string;
     backButtonUrl: string;
-    showSocial?: boolean
+    showSocial?: boolean,
+    
 }
+
+
 export const FormWrapper: FC<FormWrapperProps> = ({children, title, backButtonText, backButtonLinkText, backButtonUrl, showSocial = false}) => {
+
+  
   return (
 <div className="flex flex-col items-center px-p-half py-8 justify-center min-h-dvh w-full gap-4">
       <div className="flex flex-col  lg:w-[50%] max-w-[500px] w-full gap-4">
