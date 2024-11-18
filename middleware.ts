@@ -1,33 +1,70 @@
-import NextAuth from "next-auth";
-import authConfig from "@/auth.config";
-const { auth } = NextAuth(authConfig);
-import {
-  DEFAULT_LOGIN_REDIRECT,
-  authRoutes,
-  publicRoutes,
-  apiAuthPrefix
-} from "@/routes";
+import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { DEFAULT_LOGIN_REDIRECT, authRoutes, publicRoutes, apiAuthPrefix } from "@/routes";
 
-export default auth((req) => {
+export default async function middleware(req: NextRequest) {
   const { nextUrl } = req;
-  const isLoggedIn = !!req.auth;
+
+  // Extract the user session from the JWT token
+  const session = await getToken({ req, secret: process.env.AUTH_SECRET });
+  
+
+  const isLoggedIn = !!session;
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isAuthRoute = !!authRoutes.find(route => nextUrl.pathname.startsWith(route));
-  const isPublicRoute = !!publicRoutes.find(route => nextUrl.pathname.startsWith(route));
-const redirect  = isApiAuthRoute || nextUrl.pathname === DEFAULT_LOGIN_REDIRECT ? null:  nextUrl.pathname ;
-  if (isApiAuthRoute) return;
+  const isAuthRoute = authRoutes.some((route) => nextUrl.pathname.startsWith(route));
+  const isPublicRoute = publicRoutes.some((route) => nextUrl.pathname.startsWith(route));
+
+  const redirect =
+    isApiAuthRoute || nextUrl.pathname === DEFAULT_LOGIN_REDIRECT
+      ? null
+      : nextUrl.pathname;
+
+  if (isApiAuthRoute) {
+    return NextResponse.next();
+  }
+
+  if (isAuthRoute) {
+    if (isLoggedIn) {
+      return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.url));
+    }
+    return NextResponse.next();
+  }
+
+  // if (
+  //   isLoggedIn &&
+  //   session &&
+  //   (!session.username || !session.bio) &&
+  //   nextUrl.pathname !== "/complete-profile"
+  // ) {
+  //   return NextResponse.redirect(
+  //     new URL(
+  //       `/complete-profile${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`,
+  //       req.url
+  //     )
+  //   );
+  // }
+
+  // if (
+  //   isLoggedIn &&
+  //   session &&
+  //   session.username &&
+  //   session.bio &&
+  //   nextUrl.pathname === "/complete-profile"
+  // ) {
+  //   return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.url));
+  // }
 
   if (!isLoggedIn && !isPublicRoute && !isAuthRoute) {
-    return Response.redirect(
+    return NextResponse.redirect(
       new URL(
-        `/login${redirect ? `?redirect=${encodeURIComponent(redirect)}`: ""}`,
-        nextUrl
+        `/login${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`,
+        req.url
       )
     );
   }
 
-  return ;
-})
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
@@ -35,8 +72,4 @@ export const config = {
     "/(api|trpc)(.*)",
   ],
   runtime: "nodejs",
-  unstable_allowDynamic: [
-      "/src/db/lib/db",
-      "/node_modules/mongoose/dist/**",
-  ]
 };

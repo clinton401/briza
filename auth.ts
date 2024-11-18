@@ -84,10 +84,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async jwt({ token }) {
       let user;
-      if (token.sub) {
-        user = await findUnique(token.sub, true);
-      } else if (token.email) {
+      if (token.email) {
         user = await findUnique(token.email.toLowerCase());
+      } else if (token.sub) {
+        
+        user = await findUnique(token.sub, true);
       }
       if (user) {
           token.email = user.email

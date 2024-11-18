@@ -102,11 +102,12 @@ export const login = async (
         redirect: false,
       });
       if(!result || result.error) return createErrorResponse(unknown_error);
+      const newRedirect = !user.username || !user.bio || !user.profilePictureUrl ? "/complete-profile": redirect;
       return {
         success: "Login successful!",
         error: undefined,
-        redirectUrl: redirect
-          ? encodeURIComponent(redirect)
+        redirectUrl: newRedirect
+          ? newRedirect
           : DEFAULT_LOGIN_REDIRECT,
         isTwoFA: false,
       };
