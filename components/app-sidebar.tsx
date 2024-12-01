@@ -7,6 +7,8 @@ import {
   ChevronUp,
   BookmarkPlus,
   PlusCircle,
+  BellDot,
+  // Check,
   User2,
 } from "lucide-react";
 import Link from "next/link";
@@ -22,6 +24,8 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter,
+  useSidebar,
+  SidebarMenuBadge
 } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -46,6 +50,11 @@ const items = [
     title: "Search",
     url: "/search",
     icon: Search,
+  },
+  {
+    title: "Notifications",
+    url: "/notifications",
+    icon: BellDot,
   },
   {
     title: "Inbox",
@@ -76,6 +85,7 @@ export const AppSidebar: FC<{ session: SessionType | undefined }> = ({
   const pathname = usePathname();
   const { push } = useRouter();
   const { createError, createSimple } = createToast();
+  const { open } = useSidebar();
   const handleLogout = async () => {
     try {
       await signOut();
@@ -88,17 +98,23 @@ export const AppSidebar: FC<{ session: SessionType | undefined }> = ({
       createError("There was a problem trying to logout");
     }
   };
+  // console.log(session)
   const profileNavigator = () => {
-if(!session?.username)return;
-push(`/user/${encodeURIComponent(session.username)}`)
-  }
-
+    if (!session?.username) return;
+    push(`/user/${encodeURIComponent(session.username)}`);
+  };
+  const session_username = session?.username
+  ? session.username.charAt(0).toUpperCase() + session.username.slice(1)
+  : "User";
+const session_email = session?.email ? session.email.charAt(0).toUpperCase() + session.email.slice(1): ""
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <div className="relative h-[35px] aspect-square">
+            <div
+              className={`relative h-[35px]  aspect-square`}
+            >
               <Images imgSrc={Logo} alt="Logo" />
             </div>
           </SidebarMenuItem>
@@ -122,6 +138,7 @@ push(`/user/${encodeURIComponent(session.username)}`)
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
+                  <SidebarMenuBadge>0</SidebarMenuBadge>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -133,20 +150,23 @@ push(`/user/${encodeURIComponent(session.username)}`)
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="h-[3rem]">
-                  <Avatar>
+                <SidebarMenuButton className={` ${open ? "h-[2.5rem]" : ""} `}>
+                  <Avatar className={`${open ? "h-9 w-9 ": "h-5 w-5"}`}>
                     <AvatarImage
                       src={session?.profilePictureUrl || ""}
-                      alt="@shadcn"
+                      alt="User profile picture"
                     />
                     <AvatarFallback>
                       <User2 />
                     </AvatarFallback>
                   </Avatar>
 
-                  <span className="flex-grow truncate flex flex-col gap-1 text-xs">
-                    <p className="w-full truncate">{session?.name || "User"}</p>{" "}
-                    <p className="w-full truncate">{session?.email || ""}</p>{" "}
+                  <span className="flex-grow truncate justify-center flex flex-col gap-1 text-xs">
+                    <p className="w-full truncate flex item-center ">{session_username}
+
+                    
+                       </p>{" "}
+                    <p className="w-full truncate">{session_email}</p>{" "}
                   </span>
 
                   <ChevronUp className="ml-auto" />
@@ -157,9 +177,7 @@ push(`/user/${encodeURIComponent(session.username)}`)
                 className="w-[--radix-popper-anchor-width]"
               >
                 {session?.username && (
-                  <DropdownMenuItem
-                    onClick={profileNavigator}
-                  >
+                  <DropdownMenuItem onClick={profileNavigator}>
                     <span>Profile</span>
                   </DropdownMenuItem>
                 )}

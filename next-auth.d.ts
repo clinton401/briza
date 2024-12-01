@@ -23,6 +23,7 @@ declare module "next-auth" {
     updatedAt?: Date;
     googleId?: string;
     twoFactorAuthentication?: boolean;
+    blueCheckVerified: boolean;
     
     isPasswordAvailable?: boolean;
     } & DefaultSession["user"];

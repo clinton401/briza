@@ -90,6 +90,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         
         user = await findUnique(token.sub, true);
       }
+      // console.log(user)
       if (user) {
           token.email = user.email
           token.sub = user.id;
@@ -107,7 +108,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           token.lastLogin = user.lastLogin;
           token.googleId = user.googleId;
           token.twoFactorAuthentication = user.twoFactorAuthentication;
-
+token.blueCheckVerified = user.blueCheckVerified;
           token.createdAt = user.createdAt;
           token.updatedAt = user.updatedAt;
           token.isPasswordAvailable = !!user.password;
@@ -117,6 +118,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ token, session }: { session: Session; token: any }) {
         if (!token || !session?.user) return session;
+
         if(token.email) {
           session.user.email = token.email
         }
@@ -150,6 +152,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (token.verifiedDate) {
           session.user.verifiedDate = token.verifiedDate;
         }
+        
+        if (token.blueCheckVerified) {
+          session.user.blueCheckVerified = token.blueCheckVerified ;
+        }
   
         if (token.username) {
           session.user.username = token.username;
@@ -181,6 +187,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (token.isPasswordAvailable !== undefined) {
           session.user.isPasswordAvailable = token.isPasswordAvailable;
         }
+        // console.log({session: session.user, token})
         return session;
       },
   },

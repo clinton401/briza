@@ -61,21 +61,33 @@ export const createUser = async (name: string, email: string, password?: string,
       const hashedPassword = password ? await genPasswordHash(password) : undefined;
   
      
-      const newUser = await prisma.user.create({
-        data: {
-          name,
-          email: email.toLowerCase(),
-          ...(hashedPassword && { password: hashedPassword }),
-          ...(extraData && extraData),
-        },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
+      const result = await prisma.$transaction(async (tx) => {
+        // Create the user first
+        const newUser = await tx.user.create({
+          data: {
+            name,
+            email: email.toLowerCase(),
+            ...(hashedPassword && { password: hashedPassword }),
+            ...(extraData && extraData),
+          },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        });
+  
+       
+        await tx.userMetrics.create({
+          data: {
+            userId: newUser.id, // Link metrics to the newly created user
+          },
+        });
+  
+        return newUser;
       });
   
-      return newUser;
+      return result;
     } catch (error) {
       console.error(`Unable to create user: ${error}`);
       return null;

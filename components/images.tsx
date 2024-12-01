@@ -22,7 +22,7 @@ export const Images: FC<ImagesProps> = ({ imgSrc, alt, detailsPg = false }) => {
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         className={`w-full h-full ${
           detailsPg ? "object-cover sm:object-contain" : "object-cover"
-        } overflow-hidden rounded `}
+        } overflow-hidden rounded object-center `}
         fill={true}
         onLoad={() => setIsLoading(false)} 
       />

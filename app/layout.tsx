@@ -24,7 +24,7 @@ export default async  function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${lato.className} antialiased`}
+        className={`${lato.className} antialiased w-vw overflow-x-hidden`}
       >
         <ThemeProvider
             attribute="class"

@@ -27,6 +27,7 @@ model User {
   website                 String?                  @db.Text
   websiteName             String?                  @db.VarChar(255)
   isActive                Boolean                  @default(true)
+  blueCheckVerified       Boolean                  @default(false)
   verifiedDate            DateTime?
   isVerified              Boolean                  @default(false)
   isSuspended             Boolean                  @default(false)
@@ -126,7 +127,7 @@ model Post {
   id        String   @id @default(uuid())
   content   String?  @db.Text
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime? @updatedAt
   isEdited  Boolean  @default(false)
   audience  Audience @default(PUBLIC)
   userId    String
@@ -145,9 +146,9 @@ model Post {
 model UserMetrics {
   id             String @id @default(uuid())
   userId         String @unique
-  followersCount Int    @default(0)
-  followingCount Int    @default(0)
-  postCount      Int    @default(0)
+  followersCount Int?    @default(0)
+  followingCount Int?    @default(0)
+  postCount      Int?    @default(0)
   user           User?  @relation(fields: [userId], references: [id])
 
   @@index([userId])
@@ -156,10 +157,10 @@ model UserMetrics {
 model PostMetrics {
   id             String @id @default(uuid())
   postId         String @unique
-  likesCount     Int    @default(0)
-  commentsCount  Int    @default(0)
-  bookmarksCount Int    @default(0)
-  viewsCount     Int    @default(0)
+  likesCount     Int?    @default(0)
+  commentsCount  Int?    @default(0)
+  bookmarksCount Int?    @default(0)
+  viewsCount     Int?    @default(0)
   post           Post?  @relation(fields: [postId], references: [id])
 
   @@index([postId])

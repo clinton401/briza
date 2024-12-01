@@ -14,7 +14,9 @@ export const ParentRedirect: FC<{
   const pathname = usePathname();
 
   const isApiAuthRoute = pathname.startsWith(apiAuthPrefix);
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  const isAuthRoute =
+    authRoutes.some((route) => pathname.startsWith(route)) ||
+    pathname === "/complete-profile";
   const redirect =
     isApiAuthRoute || pathname === DEFAULT_LOGIN_REDIRECT ? null : pathname;
 
@@ -58,10 +60,15 @@ export const ParentRedirect: FC<{
       {isAuthRoute ? (
         children
       ) : (
-        <SidebarProvider>
-          <AppSidebar session={session}/>
-          <SidebarTrigger /> {children}{" "}
-        </SidebarProvider>
+        <>
+          <div className="flex md:hidden">{children}</div>
+          <div className="hidden md:flex">
+            <SidebarProvider>
+              <AppSidebar session={session} />
+              <SidebarTrigger /> {children}{" "}
+            </SidebarProvider>
+          </div>
+        </>
       )}
     </>
   );
