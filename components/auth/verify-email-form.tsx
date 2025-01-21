@@ -158,7 +158,8 @@ export const VerifyEmailForm: FC = () => {
           {success && <FormSuccess message={success} />}
           <LoadingButton
             message="Verify"
-            isPending={isPending || isNewEmailPending}
+            disabled={isPending || isNewEmailPending}
+            isPending={isPending}
           />
         </form>
       </Form>
@@ -168,8 +169,9 @@ export const VerifyEmailForm: FC = () => {
         </p>
 
         <RegenerateButton
-          isNewEmailPending={isNewEmailPending || isPending}
+          disabled={isNewEmailPending || isPending}
           isResendClicked={isResendClicked}
+          isNewEmailPending={isNewEmailPending}
           resendCode={resendCode}
           resetCounter={resetCounter}
         />

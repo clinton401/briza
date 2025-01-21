@@ -25,7 +25,7 @@ export const HoverCardUI:FC<HoverCardProps> = ({profilePictureUrl, username, joi
       <HoverCardTrigger asChild={isButtonOrLink}>
      {children}
       </HoverCardTrigger>
-      <HoverCardContent className="w-70 md:w-80">
+      <HoverCardContent className="w-full max-w-80">
       <div className="flex  space-x-4">
           <Avatar>
             <AvatarImage src={profilePictureUrl}

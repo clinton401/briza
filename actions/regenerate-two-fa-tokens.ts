@@ -48,7 +48,7 @@ export const regenerateTwoFAToken = async (email: string) => {
       `Unable to regenerate reset token for email ${email}: ${err instanceof Error ? err.message : err}`
     );
     return {
-      error: err instanceof Error ? err.message : unknown_error,
+      error: unknown_error,
       success: undefined,
     };
   }

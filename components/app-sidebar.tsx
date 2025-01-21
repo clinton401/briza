@@ -40,6 +40,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { SessionType } from "@/lib/types";
 import createToast from "@/hooks/create-toast";
 import { signOut } from "next-auth/react";
+import fetchData from "@/hooks/fetch-data";
 const items = [
   {
     title: "Home",
@@ -103,9 +104,7 @@ export const AppSidebar: FC<{ session: SessionType | undefined }> = ({
     if (!session?.username) return;
     push(`/user/${encodeURIComponent(session.username)}`);
   };
-  const session_username = session?.username
-  ? session.username.charAt(0).toUpperCase() + session.username.slice(1)
-  : "User";
+  const session_username = session?.username ?? "User";
 const session_email = session?.email ? session.email.charAt(0).toUpperCase() + session.email.slice(1): ""
   return (
     <Sidebar collapsible="icon">

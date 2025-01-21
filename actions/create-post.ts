@@ -1,11 +1,9 @@
 "use server";
 import { prisma } from "@/lib/db";
 import type { UploadedMediaDetails } from "@/lib/types";
-import { createErrorResponse } from "@/lib/random-utils";
 import getServerUser from "@/hooks/get-server-user";
-import { unauthorized_error } from "@/lib/variables";
+import { unauthorized_error, unknown_error } from "@/lib/variables";
 
-import getUserIpAddress from "@/hooks/get-user-ip-address";
 import { rateLimit } from "@/lib/rate-limits";
 type CreatePostTypes = {
   content: string;
@@ -18,9 +16,16 @@ enum MediaType {
     IMAGE = "IMAGE",
     VIDEO = "VIDEO",
   }
+  const createPostError = (error: string) => {
+    return {
+      error,
+      success: undefined,
+      data: undefined
+    }
+  }
 export const createPost = async (postData: CreatePostTypes) => {
   const session = await getServerUser();
-  if (!session) return createErrorResponse(unauthorized_error);
+  if (!session) return createPostError(unauthorized_error);
   const {
     content,
     audience,
@@ -28,17 +33,16 @@ export const createPost = async (postData: CreatePostTypes) => {
     uploadedImagesDetails,
     uploadedVideoDetails,
   } = postData;
-  console.log(postData)
   const { error } = rateLimit(session.id, true);
-  if (error) return createErrorResponse(error);
+  if (error) return createPostError(error);
   if (
     content.length < 1 &&
     uploadedImagesDetails.length < 1 &&
     uploadedVideoDetails === undefined
   )
-    return createErrorResponse("Image, video, or text is required.");
+    return createPostError("Image, video, or text is required.");
 try{
-    const result = await prisma.$transaction(async (tx) => {
+ const result =  await prisma.$transaction(async (tx) => {
         
         const post = await tx.post.create({
           data: {
@@ -89,14 +93,14 @@ try{
           });
         return post;
     });
-console.log(result);
 return {
     error: undefined,
-    success: "Post created successfully!"
+    success: "Post created successfully!",
+    data: result
 }
 }catch(err) {
     console.error("Error creating post:", err);
-    return createErrorResponse("An error occurred while creating the post.");
+    return createPostError(unknown_error);
 }
 
 };

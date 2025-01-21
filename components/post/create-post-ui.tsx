@@ -1,30 +1,31 @@
 "use client";
 import { FC, useState, useRef } from "react";
 import type { UploadedMediaDetails, SessionType } from "@/lib/types";
-import { User2, Image, Video, Earth, Smile, X } from "lucide-react";
+import { User2, Image, Video, Smile, X, Loader } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import EmojiPicker from "emoji-picker-react";
+import { EmojiSelector } from "@/components/emoji-selector";
 import createToast from "@/hooks/create-toast";
 import { Videos } from "@/components/videos";
-import { MiniLoader } from "@/components/mini-loader";
+// import { MiniLoader } from "@/components/mini-loader";
 import { TooltipComp } from "@/components/tooltip-comp";
-
+import {useRouter} from "next/navigation";
 import axios from "axios";
 import { Images } from "../images";
 import { createPost } from "@/actions/create-post";
 import { unknown_error } from "@/lib/variables";
+import handleTextAreaHeight from "@/hooks/handle-text-area-height";
+import { useQueryClient } from '@tanstack/react-query';
 type EmojiData = {
   emoji: string;
 };
 export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
   const [content, setContent] = useState("");
   const [isPostPending, setIsPostPending] = useState(false);
-  const [showPicker, setShowPicker] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [audience, setAudience] = useState<"PUBLIC" | "FOLLOWERS">("PUBLIC");
+  const [audience] = useState<"PUBLIC" | "FOLLOWERS">("PUBLIC");
   const [mediaType, setMediaType] = useState<"IMAGE" | "VIDEO" | "NONE">(
     "NONE"
   );
@@ -35,15 +36,17 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
   const [uploadedVideoDetails, setUploadedVideoDetails] = useState<
     undefined | UploadedMediaDetails
   >(undefined);
-  const textareaRef = useRef<null | HTMLTextAreaElement>(null);
+  const {textareaRef, handleInput} = handleTextAreaHeight();
   const imageInputRef = useRef<null | HTMLInputElement>(null);
   const videoInputRef = useRef<null | HTMLInputElement>(null);
   const { createSimple, createError } = createToast();
-  const handleInput = () => {
-    if (!textareaRef || !textareaRef?.current) return null;
-    textareaRef.current.style.height = "auto";
-    textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-  };
+  const {push} = useRouter();
+  const queryClient = useQueryClient();
+  // const handleInput = () => {
+  //   if (!textareaRef || !textareaRef?.current) return null;
+  //   textareaRef.current.style.height = "auto";
+  //   textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+  // };
   const handleEmojiClick = (emojiData: EmojiData) => {
     if (!textareaRef || !textareaRef?.current) return null;
     const { emoji } = emojiData;
@@ -299,7 +302,6 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
       return createError("Image, video, or text is required. ");
     try {
       setIsPostPending(true);
-      setShowPicker(false);
       const postData = {
         content,
         audience,
@@ -307,10 +309,23 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
         uploadedImagesDetails,
         uploadedVideoDetails
       }
-      const data = await createPost(postData);
-      const {error, success} = data;
+      const result = await createPost(postData);
+      const {error, success, data} = result;
       if(error) return createError(error);
-      if(!success) return createError(unknown_error);
+      if(!success || !data) return createError(unknown_error);
+      await queryClient.invalidateQueries(
+        {
+          queryKey: ['posts'], 
+          exact: true,     
+          refetchType: 'active', 
+        },
+        {
+          throwOnError: true,  
+          cancelRefetch: true,  
+        }
+      );
+      
+
       createSimple(success);
       setContent("");
       setUploadedImagesDetails([]);
@@ -319,6 +334,7 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
       if (textareaRef && textareaRef?.current){
         textareaRef.current.style.height = "40px"
       }
+      // push(`/status/${data.id}`);
     } catch (error) {
       console.error("Error creating post:", error);
       return createError("An error occurred while creating the post.");
@@ -327,7 +343,7 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
     }
   };
   return (
-    <section className="w-full border relative  px-p-half hidden sm:flex py-4 gap-4 rounded-md">
+    <section className="w-full border-y relative  px-p-half hidden sm:flex py-4 gap-4 ">
       <Avatar>
         <AvatarImage src={session?.profilePictureUrl || ""} alt="User profile picture" />
         <AvatarFallback>
@@ -340,7 +356,7 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
           spellCheck={false}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="h-[40px] min-h-[40px] resize-none overflow-hidden"
+          className="h-[40px]  min-h-[40px] max-h-[400px] resize-none overflow-hidden"
           ref={textareaRef}
           disabled={isPostPending}
           onInput={handleInput}
@@ -348,7 +364,8 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
     
         {uploading && (
           <div className="w-full justify-center flex  items-center ">
-            <MiniLoader idNeeded />
+             <Loader className="mr-2 h-4 w-4 animate-spin"/>
+            
           </div>
         )}
         {mediaType === "VIDEO" &&
@@ -399,7 +416,7 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
           <span className="flex  items-center gap-2 flex-wrap">
             <TooltipComp text={"Upload images"}>
               <Button
-                className="bg-transparent p-2 text-foreground rounded-full "
+                className="bg-transparent h-8 w-8 flex items-center justify-center text-foreground rounded-full "
                 onClick={() => handleInputClick(imageInputRef)}
                 disabled={
                   uploadedImagesDetails.length >= 4 ||
@@ -413,7 +430,7 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
             </TooltipComp>
             <TooltipComp text={"Upload a video"}>
               <Button
-                className="bg-transparent p-2 text-foreground rounded-full "
+                className="bg-transparent h-8 w-8 flex items-center justify-center text-foreground rounded-full "
                 onClick={() => handleInputClick(videoInputRef)}
                 disabled={
                   uploadedVideoDetails !== undefined ||
@@ -425,17 +442,31 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
                 <Video className="text-sm h-4 aspect-square" />
               </Button>
             </TooltipComp>
-            <TooltipComp text="Add an emoji">
+            <EmojiSelector
+            content={content}
+            setContent={setContent}
+            ref={textareaRef}
+          >
+            {/* <TooltipComp text="Add an emoji"> */}
+            <Button
+              className="bg-transparent h-8 w-8  text-foreground rounded-full "
+              disabled={isPostPending}
+            >
+              <Smile className="text-sm h-4 aspect-square" />
+            </Button>
+            {/* </TooltipComp> */}
+          </EmojiSelector>
+            {/* <TooltipComp text="Add an emoji">
               <Button
-                className="bg-transparent p-2 text-foreground rounded-full "
+                className="bg-transparent h-8 w-8 flex items-center justify-center text-foreground rounded-full "
                 disabled={isPostPending}
                 onClick={() => setShowPicker((prev) => !prev)}
               >
                 <Smile className="text-sm h-4 aspect-square" />
               </Button>
-            </TooltipComp>
+            </TooltipComp> */}
             {/* <TooltipComp text="Select an audience">
-              <Button className="bg-transparent p-2 text-foreground rounded-full ">
+              <Button className="bg-transparent h-8 w-8 flex items-center justify-center text-foreground rounded-full ">
                 <Earth className="text-sm h-4 aspect-square" />
               </Button>
             </TooltipComp> */}
@@ -452,19 +483,12 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
               }
               onClick={submitHandler}
             >
-              {isPostPending ? <MiniLoader idNeeded /> : "Post"}
+              {isPostPending ? <Loader className=" h-4 w-4 animate-spin"/> : "Post"}
             </Button>
           </span>
         </div>
       </div>
-      {showPicker && !isPostPending && (
-        <div
-          className="bg-background absolute z-[1000] top-[102%] w-[300px] left-1/2 translate-x-[-50%]"
-          id="emoji_picker"
-        >
-          <EmojiPicker onEmojiClick={handleEmojiClick} />
-        </div>
-      )}
+   
       <Input
         type="file"
         multiple

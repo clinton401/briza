@@ -8,7 +8,7 @@ const LoginPage: FC<{searchParams: {
   return (
     <FormWrapper
       title="Sign in to your account"
-      backButtonText="Don't have an account?"
+      backButtonText="Don&apos;t have an account?"
       backButtonLinkText="Create one"
       backButtonUrl={`/register${
         redirect ? `?redirect=${encodeURIComponent(redirect)} ` : ""

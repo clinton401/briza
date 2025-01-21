@@ -11,7 +11,7 @@ const requestTracker = {
   export const rateLimit = (identifier: string, isAuthenticated: boolean, options: RateLimitOptions  = {}) => {
     const { 
       windowSize = 5 * 60 * 1000,
-      maxRequests = 5,
+      maxRequests = 10,
       lockoutPeriod = 10 * 60 * 1000,
     } = options;
   

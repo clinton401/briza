@@ -93,7 +93,7 @@ export const completeProfileDetails = async (
     };
   } catch (error) {
     console.error(`Unable to complete user profile details: ${error}`);
-    const errMsg = error instanceof Error ? error.message : unknown_error;
-    return createErrorResponse(errMsg);
+    // const errMsg = error instanceof Error ? error.message : unknown_error;
+    return createErrorResponse(unknown_error);
   }
 };

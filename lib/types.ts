@@ -33,6 +33,7 @@ export type NotFollowedUsers = {
   bio: string | null;
   createdAt: Date;
   blueCheckVerified: boolean;
+  hasFollowed: boolean;
 };
 export type PostWithDetails = {
   id: string;
@@ -68,6 +69,8 @@ export type PostWithDetails = {
   }> | null;
   hasLiked: boolean,
   hasBookmarked: boolean;
+  isFollowing: boolean;
+
 };
 export type PostMetricsTypes =  {
   id: string;
@@ -83,3 +86,60 @@ url: string,
 
 
 }
+
+export type CommentWithUserAndFollowers = {
+  id: string;
+  content: string;
+  createdAt: Date;
+  parentCommentId: string | null;
+  hasLiked: boolean;
+  metrics: {
+    id: string;
+    likesCount: number | null;
+    repliesCount: number | null;
+  } | null;
+  user: {
+    id: string;
+    name: string; 
+    profilePictureUrl: string | null;
+    bio: string | null;
+    username: string | null;
+    createdAt: Date;
+    blueCheckVerified: boolean;
+    followers: {
+      id: string;
+      followingId: string;
+    }[];
+  };
+};
+export enum NotificationType {
+  REPLY = "REPLY",
+  COMMENT = "COMMENT",
+  
+  LIKE_COMMENT = "LIKE_COMMENT",
+  LIKE = "LIKE",
+  FOLLOW = "FOLLOW",
+  SYSTEM = "SYSTEM",
+  TAG = "TAG"
+}
+export type NotificationWithTriggeredBy = {
+  id: string;
+  isRead: boolean;
+  createdAt: Date;
+  type: NotificationType; 
+  url: string;
+  triggeredById: string;
+  userId: string;
+  triggeredBy: {
+    id: string;
+    name: string;
+    profilePictureUrl: string | null;
+    bio: string | null;
+    username: string | null;
+    createdAt: Date;
+    blueCheckVerified: boolean;
+  } | null;
+};
+
+
+

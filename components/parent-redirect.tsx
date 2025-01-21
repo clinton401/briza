@@ -5,6 +5,8 @@ import { DEFAULT_LOGIN_REDIRECT, apiAuthPrefix, authRoutes } from "@/routes";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import type { SessionType } from "@/lib/types";
+import { MobileNavbar } from "@/components/mobile-navbar";
+import { HomeAside } from "@/components/home/home-aside";
 
 export const ParentRedirect: FC<{
   session: SessionType | undefined;
@@ -61,11 +63,16 @@ export const ParentRedirect: FC<{
         children
       ) : (
         <>
-          <div className="flex md:hidden">{children}</div>
-          <div className="hidden md:flex">
+          <div className="flex md:hidden w-full">
+            
+            {children}
+            <MobileNavbar session={session}/>
+            </div>
+          <div className="hidden md:flex  w-full   lg:pl-0  lg:pr-[20rem]">
             <SidebarProvider>
               <AppSidebar session={session} />
-              <SidebarTrigger /> {children}{" "}
+              <SidebarTrigger /> {children}  
+              <HomeAside />{" "}
             </SidebarProvider>
           </div>
         </>

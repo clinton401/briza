@@ -52,7 +52,7 @@ export const register = async (
   } catch (err) {
     console.error(`Unable to register user: ${err}`);
     return {
-      error: err instanceof Error ? err.message : unknown_error,
+      error: unknown_error,
       success: undefined,
       redirectUrl: undefined,
     };

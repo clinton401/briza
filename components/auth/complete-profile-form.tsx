@@ -9,14 +9,14 @@ import { Label } from "@/components/ui/label";
 import { unknown_error } from "@/lib/variables";
 import { checkUsernameUnique } from "@/actions/check-username-unique";
 import { Cross2Icon, CheckIcon } from "@radix-ui/react-icons";
-import { DotLoader } from "@/components/dot-loader";
+// import { DotLoader } from "@/components/dot-loader";
 import { useDebouncedCallback } from "use-debounce";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { MiniLoader } from "@/components/mini-loader";
 import useGetRedirectUrl from "@/hooks/use-get-redirect-url";
 import { completeProfileDetails } from "@/actions/complete-profile-details";
-
+import {Loader} from "lucide-react"
 export const CompleteProfileForm: FC = () => {
   const [isUsernameValid, setIsUsernameValid] = useState(true);
   const [isUsernameLoading, setIsUsernameLoading] = useState(false);
@@ -355,7 +355,7 @@ export const CompleteProfileForm: FC = () => {
             disabled={submitLoading}
           />
           <span className="absolute right-4 top-1/2 translate-y-[-50%]">
-            {isUsernameLoading && <DotLoader />}
+            {isUsernameLoading && <Loader className="mr-2 h-4 w-4 animate-spin"/>}
             {!isUsernameLoading &&
               username.length > 0 &&
               (usernameError || !isUsernameValid) && (
@@ -428,7 +428,8 @@ export const CompleteProfileForm: FC = () => {
         onClick={submitHandler}
         className="w-full items-center justify-center"
       >
-        {submitLoading ? <MiniLoader /> : "Complete"}
+        {submitLoading ?  <>
+          <Loader className="mr-1 h-4 w-4 animate-spin"/> Please wait...</> : "Complete"}
       </Button>
     </div>
   );

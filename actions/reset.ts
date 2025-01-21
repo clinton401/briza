@@ -154,7 +154,7 @@ if(!updatedUser) return {
   }catch(err) {
     console.error(`Unable to reset user password: ${err}`);
     return {
-        error: err instanceof Error ? err.message : unknown_error,
+        error: unknown_error,
         success: undefined,
         redirectUrl: undefined,
         isOtpSent: false

@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import {RegisterSchema} from "@/schemas"
 import { z } from "zod"
-import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -114,7 +113,7 @@ export const RegisterForm: FC = () => {
           
           {error && <FormError message={error}/>}
           {success && <FormSuccess message={success} />}
-       <LoadingButton isPending={isPending} message="Create account"/>
+       <LoadingButton isPending={isPending} disabled={isPending} message="Create account"/>
         </form>
       </Form>
     )

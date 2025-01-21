@@ -5,8 +5,7 @@ import "./globals.css";
 import getServerUser from "@/hooks/get-server-user";
 import { Toaster } from "@/components/ui/toaster";
 import { ParentRedirect } from "@/components/parent-redirect";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar";
+import {TanstackQueryClient} from "@/components/tanstack-query-client"
 const lato = Lato({ subsets: ["latin"], weight: ["100", "300" , "400"  , "700", "900" ] });
 
 export const metadata: Metadata = {
@@ -26,6 +25,7 @@ export default async  function RootLayout({
       <body
         className={`${lato.className} antialiased w-vw overflow-x-hidden`}
       >
+        <TanstackQueryClient>
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -34,11 +34,17 @@ export default async  function RootLayout({
           >
            
         <ParentRedirect session={session}>
+        <main
+      className={` w-full `}
+    >
             {children}
+            
+            </main>
             <Toaster/>
             
           </ParentRedirect>
           </ThemeProvider>
+          </TanstackQueryClient>
       </body>
     </html>
   );

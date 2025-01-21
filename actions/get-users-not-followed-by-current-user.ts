@@ -5,7 +5,6 @@ import getServerUser from "@/hooks/get-server-user";
 import { unknown_error, unauthorized_error } from "@/lib/variables";
 export const getUsersNotFollowedByCurrentUser = async () => {
   try {
-
     const session = await getServerUser();
     if (!session)
       return {
@@ -13,29 +12,28 @@ export const getUsersNotFollowedByCurrentUser = async () => {
         users: undefined,
       };
     const users = await prisma.user.findMany({
-     
-        where: {
-            AND: [
-              { id: { not: session.id } },
-              
-              {
-                NOT: {
-                  followers: {
-                    some: {
-                      followerId: session.id,
-                    },
-                  },
+      where: {
+        AND: [
+          { id: { not: session.id } },
+
+          {
+            NOT: {
+              followers: {
+                some: {
+                  followerId: session.id,
                 },
               },
-           
-              { isVerified: true },
-              { bio: { not: null } },
-              { name: { not: undefined } },
-              { username: { not: null } },
-              { profilePictureUrl: { not: null } },
-            ],
+            },
           },
-      take: 15,
+
+          { isVerified: true },
+          { bio: { not: null } },
+          { name: { not: undefined } },
+          { username: { not: null } },
+          { profilePictureUrl: { not: null } },
+        ],
+      },
+      take: 6,
       select: {
         id: true,
         username: true,
@@ -44,16 +42,19 @@ export const getUsersNotFollowedByCurrentUser = async () => {
         profilePicturePublicId: true,
         bio: true,
         blueCheckVerified: true,
-        createdAt: true
+        createdAt: true,
       },
     });
-    return { error: undefined, users };
+    const formattedUsers = users.map((user) => {
+      return { ...user, hasFollowed: false };
+    });
+    return { error: undefined, users: formattedUsers };
   } catch (err) {
     console.error(
       `Error trying to get users not being followed by current user: ${err}`
     );
     return {
-      error: err instanceof Error ? err.message : unknown_error,
+      error: unknown_error,
       users: undefined,
     };
   }

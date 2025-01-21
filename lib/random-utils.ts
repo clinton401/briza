@@ -20,17 +20,17 @@ export function timeAgoNumber(date: Date) {
   const secondsDiff = differenceInSeconds(now, date);
 
   if (secondsDiff < 60) {
-    return { amount: secondsDiff, type: "sec" };
+    return { amount: secondsDiff, type: "s" };
   }
 
   const minutesDiff = differenceInMinutes(now, date);
   if (minutesDiff < 60) {
-    return { amount: minutesDiff, type: "min" };
+    return { amount: minutesDiff, type: "m" };
   }
 
   const hoursDiff = differenceInHours(now, date);
   if (hoursDiff < 24) {
-    return { amount: hoursDiff, type: "hr" };
+    return { amount: hoursDiff, type: "h" };
   }
 
   const daysDiff = differenceInDays(now, date);
@@ -39,21 +39,22 @@ export function timeAgoNumber(date: Date) {
   }
 
   const weeksDiff = differenceInWeeks(now, date);
-  return { amount: weeksDiff, type: "wk" };
+  return { amount: weeksDiff, type: "w" };
 }
 
   export const dateHandler = (date: Date) => {
     const year = getYear(date);
     const month = getMonth(date);
    const dayOfMonth = getDate(date);
-   const dayOfWeek = format(date, 'EEEE')
+   const dayOfWeek = format(date, 'EEEE');
+   const time = format(date, 'h:mm a');
     const months = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
       ];
       const monthText = months[month];
 
-      return {year, month, dayOfMonth, dayOfWeek, monthText}
+      return {year, month, dayOfMonth, dayOfWeek, monthText, time}
   }
   
   export const getUppercaseFirstLetter = (name: string) => {
@@ -71,3 +72,10 @@ export function timeAgoNumber(date: Date) {
     }
   }
   
+  export const threeResponse = (error: string) => {
+    return {
+error, 
+success: false,
+data: undefined
+    }
+  }

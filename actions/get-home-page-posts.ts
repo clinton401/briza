@@ -1,20 +1,21 @@
 "use server";
 import { prisma } from "@/lib/db";
 import getServerUser from "@/hooks/get-server-user";
-import {unauthorized_error} from "@/lib/variables";
+import {unauthorized_error, unknown_error} from "@/lib/variables";
 export const getHomePagePosts = async (page = 1) => {
 
+  
     const session = await getServerUser();
     if(!session) return {
         error: unauthorized_error,
-        success: undefined,
+        success: false,
         data: undefined
     }
     const userId = session.id;
-    const pageSize = 20;
+    const pageSize = 10;
     const currentPage = Math.max(1, Number(page) || 1);
     const offset = (currentPage - 1) * pageSize;
-    // console.log({currentPage, offset})
+
   
     try {
         const [posts, totalPosts] = await prisma.$transaction([
@@ -36,7 +37,13 @@ export const getHomePagePosts = async (page = 1) => {
                     bio: true,
                     username: true,
                     createdAt: true,
-                    blueCheckVerified: true
+                    blueCheckVerified: true,
+                    followers: {
+                      where: {
+                        followerId: userId, 
+                      },
+                      select: { id: true, followingId: true },
+                    },
                   },
                 },
                 media: true,
@@ -60,23 +67,30 @@ export const getHomePagePosts = async (page = 1) => {
             ...post,
             hasLiked: post.likes.length > 0,
             hasBookmarked: post.bookmarks.length > 0,
+            isFollowing: post.user.followers.some(
+              (follow) => follow.followingId === post.user.id
+            ),
           }));
-      
+
+
+          const totalPages = Math.ceil(totalPosts / pageSize);
+          const nextPage = currentPage < totalPages ? currentPage + 1 : null;
           return {
             success: true,
             error: null,
             data: {
               posts: formattedPosts,
               totalPosts,
-              totalPages: Math.ceil(totalPosts / pageSize),
+              totalPages,
               currentPage,
+              nextPage
             },
           }
     } catch (error) {
       console.error("Error fetching posts:", error);
       return {
         success: false,
-        error: "Unable to fetch posts",
+        error: unknown_error,
         data: undefined
       };
     }

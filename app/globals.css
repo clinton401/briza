@@ -132,6 +132,13 @@ width: calc(100% - 55px)
 .create_post_images {
   width: calc(50% - 8px)
 }
+.post_sticky {
+  position: fixed;
+  width: calc(100% - 40rem);
+  top: 0;
+
+  left: 20rem;
+}
 .leap-frog {
   --uib-size: 30px;
   --uib-speed: 2s;

@@ -1,6 +1,4 @@
 "use server";
-import * as z from "zod";
-import { OtpSchema } from "@/schemas";
 import { unknown_error } from "@/lib/variables";
 import getUserIpAddress from "@/hooks/get-user-ip-address";
 import { rateLimit } from "@/lib/rate-limits";
@@ -47,7 +45,7 @@ export const regenerateEmailVerificationCode = async(userId: string, redirect: s
     }catch(err) {
         console.error(`Unable to regenerate email verification code: ${err}`);
         return {
-            error: err instanceof Error ? err.message : unknown_error,
+            error: unknown_error,
             success: undefined,
             redirectUrl: undefined,
           };

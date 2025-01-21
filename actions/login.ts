@@ -114,7 +114,7 @@ export const login = async (
   } catch (err) {
     console.error(`Unable to login: ${err}`);
     return {
-      error: err instanceof Error ? err.message : unknown_error,
+      error: unknown_error,
       success: undefined,
       redirectUrl: undefined,
       isTwoFA: undefined,

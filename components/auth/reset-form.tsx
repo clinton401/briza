@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { ResetSchema } from "@/schemas";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -185,14 +184,15 @@ setIsResendClicked(false);
         {success && <FormSuccess message={success} />}
         <LoadingButton
           message={isCodeSent ? "Confirm" : "Verify"}
-          isPending={isPending || isNewEmailPending}
+          disabled={isPending || isNewEmailPending}
+          isPending={isPending}
         />
       </form>
     </Form>
     {isCodeSent &&  <div className="w-full gap-4 flex flex-col justify-center items-center pt-4">
         <p className="text-xs w-full text-center ">Didn&apos;t send code yet?</p>
 
-    <RegenerateButton isNewEmailPending={isNewEmailPending || isPending} isResendClicked={isResendClicked} resendCode={regenerateCode} resetCounter={resetCounter} />
+    <RegenerateButton disabled={isNewEmailPending || isPending}  isNewEmailPending={isNewEmailPending} isResendClicked={isResendClicked} resendCode={regenerateCode} resetCounter={resetCounter} />
    
     </div>}
     </div>

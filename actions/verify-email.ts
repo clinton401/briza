@@ -71,7 +71,7 @@ export const verifyEmail = async (
   } catch (err) {
     console.error(`Unable to verify user email: ${err}`);
     return {
-      error: err instanceof Error ? err.message : unknown_error,
+      error: unknown_error,
       success: undefined,
       redirectUrl: undefined,
     };

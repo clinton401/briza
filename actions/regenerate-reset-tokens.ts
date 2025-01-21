@@ -37,7 +37,7 @@ export const regenerateResetToken = async(email: string)=> {
     }catch(err){
         console.error(`Unable to regenerate reset token: ${err}`);
         return {
-            error: err instanceof Error ? err.message : unknown_error,
+            error: unknown_error,
             success: undefined,
           };
     }

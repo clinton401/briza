@@ -139,6 +139,7 @@ model Post {
   likes     Like[]
   bookmarks Bookmark[]
   views     View[]
+  
 
   @@index([id, userId])
 }
@@ -165,6 +166,13 @@ model PostMetrics {
 
   @@index([postId])
 }
+model CommentMetrics {
+  id   String @id @default(uuid())
+  commentId String @unique
+  likesCount Int? @default(0)
+  repliesCount Int? @default(0)
+  comment Comment? @relation(fields: [commentId], references: [id])
+}
 
 model Comment {
   id              String    @id @default(uuid())
@@ -176,6 +184,7 @@ model Comment {
   parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id])
   replies         Comment[] @relation("CommentReplies")
   likes           Like[]
+  metrics         CommentMetrics?
   post            Post      @relation(fields: [postId], references: [id])
   user            User      @relation(fields: [userId], references: [id])
 
@@ -215,7 +224,7 @@ model View {
   postId    String
   user      User     @relation(fields: [userId], references: [id])
   post      Post     @relation(fields: [postId], references: [id])
-
+  @@unique([userId, postId])
   @@index([userId, postId])
 }
 
@@ -295,8 +304,10 @@ enum LikeType {
 }
 
 enum NotificationType {
+  REPLY
   COMMENT
-  POST
+  
+  LIKE_COMMENT
   LIKE
   FOLLOW
   SYSTEM

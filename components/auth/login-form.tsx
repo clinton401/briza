@@ -47,7 +47,7 @@ export const LoginForm: FC = () => {
         },
       })
 
-     async function loginHandler(values: z.infer<typeof LoginSchema>) {
+      async function loginHandler(values: z.infer<typeof LoginSchema>) {
         try{
           setIsPending(true);
           setError(undefined); 
@@ -190,7 +190,8 @@ export const LoginForm: FC = () => {
           {success && <FormSuccess message={success} />}
       <LoadingButton
             message={"Login"}
-            isPending={isPending || isNewEmailPending}
+            disabled={isPending || isNewEmailPending}
+            isPending={isPending}
           />
     </form>
   </Form>
@@ -198,7 +199,8 @@ export const LoginForm: FC = () => {
         <div className="w-full gap-4 flex flex-col justify-center items-center pt-4">
           <p className="text-xs w-full text-center">Didn&apos;t send code yet?</p>
           <RegenerateButton
-            isNewEmailPending={isNewEmailPending || isPending}
+            disabled={isNewEmailPending || isPending}
+            isNewEmailPending={isNewEmailPending}
             isResendClicked={isResendClicked}
             resendCode={regenerateCode}
             resetCounter={resetCounter}
