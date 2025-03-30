@@ -4,6 +4,8 @@ import {Lato} from "next/font/google"
 import "./globals.css";
 import getServerUser from "@/hooks/get-server-user";
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner"
+
 import { ParentRedirect } from "@/components/parent-redirect";
 import {TanstackQueryClient} from "@/components/tanstack-query-client"
 const lato = Lato({ subsets: ["latin"], weight: ["100", "300" , "400"  , "700", "900" ] });
@@ -40,6 +42,7 @@ export default async  function RootLayout({
             {children}
             
             </main>
+            <Sonner />
             <Toaster/>
             
           </ParentRedirect>

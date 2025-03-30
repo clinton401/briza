@@ -21,7 +21,7 @@ import { useQueryClient } from '@tanstack/react-query';
 type EmojiData = {
   emoji: string;
 };
-export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
+export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, closeHandler?: () => void }> = ({ session, borderNeeded = true, closeHandler }) => {
   const [content, setContent] = useState("");
   const [isPostPending, setIsPostPending] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -39,9 +39,9 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
   const {textareaRef, handleInput} = handleTextAreaHeight();
   const imageInputRef = useRef<null | HTMLInputElement>(null);
   const videoInputRef = useRef<null | HTMLInputElement>(null);
-  const { createSimple, createError } = createToast();
-  const {push} = useRouter();
+  const { createSimple, createError, createWithAction } = createToast();
   const queryClient = useQueryClient();
+  const {push} = useRouter()
   // const handleInput = () => {
   //   if (!textareaRef || !textareaRef?.current) return null;
   //   textareaRef.current.style.height = "auto";
@@ -284,6 +284,7 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
       inputRef.current.click();
     }
   };
+  
   const submitHandler = async () => {
     if (isPostPending)
       return createError(
@@ -325,8 +326,12 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
         }
       );
       
+      const actionHandler = () =>{
+        push(`/status/${data.id}`);
+          }
 
-      createSimple(success);
+      createWithAction(success, "Check out your post", "View", actionHandler);
+      
       setContent("");
       setUploadedImagesDetails([]);
       setUploadedVideoDetails(undefined);
@@ -334,6 +339,10 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
       if (textareaRef && textareaRef?.current){
         textareaRef.current.style.height = "40px"
       }
+      if(closeHandler) {
+        closeHandler()
+      }
+     
       // push(`/status/${data.id}`);
     } catch (error) {
       console.error("Error creating post:", error);
@@ -343,7 +352,7 @@ export const CreatePostUI: FC<{ session: SessionType }> = ({ session }) => {
     }
   };
   return (
-    <section className="w-full border-y relative  px-p-half hidden sm:flex py-4 gap-4 ">
+    <section className={`w-full ${borderNeeded ? "border-y" : ""} relative  px-p-half hidden sm:flex py-4 gap-4 `}>
       <Avatar>
         <AvatarImage src={session?.profilePictureUrl || ""} alt="User profile picture" />
         <AvatarFallback>

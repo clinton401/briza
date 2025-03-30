@@ -41,17 +41,25 @@ export const PostCard: FC<{
   session: SessionType;
   postDetails: PostWithDetails;
   isHomePage: boolean;
-}> = ({ session, postDetails, isHomePage }) => {
+  searchQuery?: string;
+   searchFilter?: "TOP" | "LATEST" | "MEDIA",
+   userId?: string
+}> = ({ session, postDetails, isHomePage, searchFilter, searchQuery, userId }) => {
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
-  const [modalLinks, setModalLinks] = useState<null | {
-    id: string;
-    url: string;
-}[]>(null); 
+  const [modalLinks, setModalLinks] = useState<
+    | null
+    | {
+        id: string;
+        url: string;
+      }[]
+  >(null);
+  const [expanded, setExpanded] = useState(false);
+  const maxLength = 200;
   const { isOpen: openModal, setIsOpen: setOpenModal } = useCloseOnEscKey();
   const { push, back } = useRouter();
   const queryClient = useQueryClient();
   const { createError, createSimple } = createToast();
-  const {mutate: toggleFollow} = useToggleFollow();
+  const { mutate: toggleFollow } = useToggleFollow();
   const { createdAt, content, user, media, metrics } = postDetails;
 
   const post_owner_profile_pic = user?.profilePictureUrl;
@@ -62,7 +70,7 @@ export const PostCard: FC<{
   const post_owner_account_created_at = user.createdAt;
   const is_post_owner_blue_verified = user.blueCheckVerified;
   const isFollowing = postDetails.isFollowing;
-  
+
   if (
     !post_owner_profile_pic ||
     !post_owner_username ||
@@ -75,16 +83,16 @@ export const PostCard: FC<{
   )
     return null;
 
-    useEffect(() => {
-      if(media) {
-        const links =  media.map((file) => {
-          return { id: file.id, url: file.mediaUrl };
-        });
-        setModalLinks(links)
-      } else {
-        setModalLinks(null)
-      }
-    }, [media])
+  useEffect(() => {
+    if (media) {
+      const links = media.map((file) => {
+        return { id: file.id, url: file.mediaUrl };
+      });
+      setModalLinks(links);
+    } else {
+      setModalLinks(null);
+    }
+  }, [media]);
   const uppercase_name = getUppercaseFirstLetter(post_owner_name);
   const uppercase_username = getUppercaseFirstLetter(post_owner_username);
   const joined_date = new Date(post_owner_account_created_at);
@@ -106,7 +114,7 @@ export const PostCard: FC<{
     viewsCount: metrics.viewsCount,
   };
   const modalHandler = (e?: React.MouseEvent<HTMLDivElement>) => {
-    if(!e) return;
+    if (!e) return;
     e.stopPropagation();
     if (openModal === false) {
       document.body.style.height = "auto";
@@ -114,20 +122,25 @@ export const PostCard: FC<{
     }
     setOpenModal(!openModal);
   };
-    const imageModalHandler = (e: React.MouseEvent<HTMLDivElement>, id: string, url: string) => {
-      e.stopPropagation();
-      if(!modalLinks) return ;
-      
-      const filteredResult = modalLinks.filter(link => {
-        return link.id !== id
-      });
-      const newData = {
-        id, url
-      }
-      const newModalLinks = [newData, ...filteredResult];
-      setModalLinks(newModalLinks);
-      modalHandler(e)
-    }
+  const imageModalHandler = (
+    e: React.MouseEvent<HTMLDivElement>,
+    id: string,
+    url: string
+  ) => {
+    e.stopPropagation();
+    if (!modalLinks) return;
+
+    const filteredResult = modalLinks.filter((link) => {
+      return link.id !== id;
+    });
+    const newData = {
+      id,
+      url,
+    };
+    const newModalLinks = [newData, ...filteredResult];
+    setModalLinks(newModalLinks);
+    modalHandler(e);
+  };
   // const modal_links = media
   //   ? media.map((file) => {
   //       return { id: file.id, url: file.mediaUrl };
@@ -140,7 +153,7 @@ export const PostCard: FC<{
 
   const navigateHandler = () => {
     if (isHomePage) {
-      push(`status/${postDetails.id}`);
+      push(`/status/${postDetails.id}`);
     }
   };
   const backHandler = () => {
@@ -160,13 +173,13 @@ export const PostCard: FC<{
       }
       await queryClient.invalidateQueries(
         {
-          queryKey: ['posts'], 
-          exact: true,     
-          refetchType: 'active', 
+          queryKey: ["posts"],
+          exact: true,
+          refetchType: "active",
         },
         {
-          throwOnError: true,  
-          cancelRefetch: true,  
+          throwOnError: true,
+          cancelRefetch: true,
         }
       );
       createSimple("Post deleted successfully");
@@ -178,22 +191,98 @@ export const PostCard: FC<{
       setIsDeleteLoading(false);
     }
   };
-  const followOrUnfollow = async() => {
-   
-      toggleFollow(
-        {
-          postId: postDetails.id,
-          value: !postDetails.isFollowing,
-          userId: post_owner_id
+  const followOrUnfollow = async () => {
+    toggleFollow(
+      {
+        postId: postDetails.id,
+        value: !postDetails.isFollowing,
+        userId: post_owner_id,
+      },
+      {
+        onError: (error) => {
+          console.error("Error toggling follow:", error);
         },
-        {
-          onError: (error) => {
-            console.error("Error toggling follow:", error);
-          },
-        }
-      );
+      }
+    );
+  };
+  // const formatContent = (text: string) => {
+  //   return text.split(/(\s+)/).map((part, index) => {
+  //     if (part.startsWith("#")) {
+  //       return (
+  //         <Link
+  //           key={index}
+  //           href={`/search?q=${part.substring(1).toLowerCase()}`}
+  //           className="text-blue-500 hover:underline active:underline focus:underline"
+  //         >
+  //           {part}
+  //         </Link>
+  //       );
+  //     } else if (part.startsWith("http://") || part.startsWith("https://")) {
+  //       return (
+  //         <a
+  //           key={index}
+  //           href={part}
+  //           target="_blank"
+  //           rel="noopener noreferrer"
+  //           className="text-green-500  hover:underline active:underline focus:underline"
+  //         >
+  //           {part}
+  //         </a>
+  //       );
+  //     }
+  //     return part;
+  //   });
+  // };
+  const highlightSearchQuery = (text: string, searchQuery?: string) => {
+    if (!searchQuery) return text;
   
-  }
+    const regex = new RegExp(`(${searchQuery})`, "gi"); // Case-insensitive match
+    return text.split(regex).map((part, index) =>
+      part.toLowerCase() === searchQuery.toLowerCase() ? (
+        <strong key={index} className="font-black">
+          {part}
+        </strong>
+      ) : (
+        part
+      )
+    );
+  };
+   const stopPropagation = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.stopPropagation()
+   }
+  const formatContent = (text: string, searchQuery?: string) => {
+    return text.split(/(\s+)/).map((part, index) => {
+      if (part.startsWith("#")) {
+        return (
+          <Link
+  key={index}
+  href={`/search?q=${encodeURIComponent(part.toLowerCase())}`} 
+  className="text-blue-500 hover:underline"
+  onClick={stopPropagation}
+>
+{highlightSearchQuery(part, searchQuery)}
+</Link>
+
+        );
+      } else if (part.startsWith("http://") || part.startsWith("https://")) {
+        return (
+          <a
+          onClick={stopPropagation}
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-green-500 hover:underline"
+          >
+            {highlightSearchQuery(part, searchQuery)}
+          </a>
+        );
+      }
+  
+    
+      return highlightSearchQuery(part, searchQuery);
+    });
+  };
   return (
     <Card
       className={`w-full border-x-transparent rounded-none px-p-half  ${
@@ -215,7 +304,11 @@ export const PostCard: FC<{
               <Button
                 variant="link"
                 className="p-0"
-                onClick={() => push(`/user/${post_owner_username}`)}
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.stopPropagation();
+
+                  push(`/user/${post_owner_id}`);
+                }}
               >
                 {/* <Link href={`/user/${id}`} > */}
 
@@ -235,7 +328,10 @@ export const PostCard: FC<{
             <span className=" h-full w-3/4 truncate overflow-hidden  justify-center flex flex-col gap-1 text-xs">
               <span className=" flex truncate items-center">
                 <Link
-                  href={`/user/${post_owner_username}`}
+                  href={`/user/${post_owner_id}`}
+                  onClick={(e: React.MouseEvent<HTMLAnchorElement>) =>
+                    e.stopPropagation()
+                  }
                   className="  w-auto hover:underline   flex items-center"
                 >
                   {uppercase_name}
@@ -249,7 +345,10 @@ export const PostCard: FC<{
               </span>
               <span className=" flex truncate items-center">
                 <Link
-                  href={`/user/${post_owner_username}`}
+                  href={`/user/${post_owner_id}`}
+                  onClick={(e: React.MouseEvent<HTMLAnchorElement>) =>
+                    e.stopPropagation()
+                  }
                   className="  w-auto hover:underline  text-muted-foreground"
                 >
                   @{post_owner_username}
@@ -294,13 +393,19 @@ export const PostCard: FC<{
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className=" w-60">
                     {isCurrentUserOwnerOfPost && (
-                      <DropdownMenuItem className="flex cursor-pointer items-center text-destructive truncate " onClick={handleDeletePost}>
+                      <DropdownMenuItem
+                        className="flex cursor-pointer items-center text-destructive truncate "
+                        onClick={handleDeletePost}
+                      >
                         <Trash2 className="mr-1" />
                         Delete
                       </DropdownMenuItem>
                     )}
                     {!isCurrentUserOwnerOfPost && (
-                      <DropdownMenuItem className="flex cursor-pointer items-center truncate " onClick={followOrUnfollow}>
+                      <DropdownMenuItem
+                        className="flex cursor-pointer items-center truncate "
+                        onClick={followOrUnfollow}
+                      >
                         <User2 className="mr-1" />
                         {isFollowing ? "Unfollow " : "Follow "}@
                         {post_owner_username}
@@ -314,13 +419,42 @@ export const PostCard: FC<{
         </div>
       </CardHeader>
       <CardContent className="flex flex-col px-0 gap-y-4">
-        {content && <p className="w-full ">{content}</p>}
+        {content && (
+          <p className="w-full ">
+            {/* {content} */}
+            {isHomePage ? (
+              <>
+                {formatContent(
+                  expanded ? content : content.slice(0, maxLength), searchQuery
+                )}
+                {content.length > maxLength && !expanded && (
+                  <Button
+                    onClick={(e: React.MouseEvent<HTMLSpanElement>) => {
+                      e.stopPropagation();
+                      setExpanded(true);
+                    }}
+                    className="text-[#1DA1F2] p-0 h-auto hover:bg-transparent focus:bg-transparent bg-transparent hover:underline focus:underline  ml-2"
+                  >
+                    See More
+                  </Button>
+                )}
+              </>
+            ) : (
+              <>{formatContent(content, searchQuery)}</>
+            )}
+          </p>
+        )}
         {media && (
           <>
             {media.length === 1 && (
               <>
                 {media[0].mediaType === "VIDEO" ? (
-                  <div className="w-full max-h-[400px] aspect-video" onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}>
+                  <div
+                    className="w-full max-h-[400px] aspect-video"
+                    onClick={(e: React.MouseEvent<HTMLDivElement>) =>
+                      e.stopPropagation()
+                    }
+                  >
                     <Videos url={media[0].mediaUrl} />
                   </div>
                 ) : (
@@ -343,7 +477,9 @@ export const PostCard: FC<{
                 <div
                   className={`post_images aspect-square max-h-[400px] overflow-hidden rounded-lg cursor-pointer `}
                   key={index}
-                  onClick={(e: React.MouseEvent<HTMLDivElement>)=> imageModalHandler(e, file.id, file.mediaUrl)}
+                  onClick={(e: React.MouseEvent<HTMLDivElement>) =>
+                    imageModalHandler(e, file.id, file.mediaUrl)
+                  }
                 >
                   <Images imgSrc={file.mediaUrl} alt={`Post Image`} />
                 </div>
@@ -369,7 +505,9 @@ export const PostCard: FC<{
             {media[2].mediaType !== "VIDEO" && (
               <div
                 className="w-full max-h-[200px] aspect-video cursor-pointer overflow-hidden rounded-lg "
-                onClick={(e: React.MouseEvent<HTMLDivElement>)=> imageModalHandler(e, media[2].id, media[2].mediaUrl)}
+                onClick={(e: React.MouseEvent<HTMLDivElement>) =>
+                  imageModalHandler(e, media[2].id, media[2].mediaUrl)
+                }
               >
                 <Images imgSrc={media[2].mediaUrl} alt={`Post Image`} />
               </div>
@@ -394,16 +532,24 @@ export const PostCard: FC<{
           hasLiked={postDetails.hasLiked}
           hasBookmarked={postDetails.hasBookmarked}
           postDetails={postDetails}
+          userId={userId}
+          searchQuery={searchQuery}
+          searchFilter={searchFilter}
+          sessionId={session.id}
         />
         {openModal && modalLinks && (
           <MediaDialog
             isOpen={openModal}
+            userId={userId}
+            sessionId={session.id}
             closeModal={modalHandler}
             media={modalLinks}
             hasLiked={postDetails.hasLiked}
             hasBookmarked={postDetails.hasBookmarked}
             postMetrics={newMetrics}
             postDetails={postDetails}
+            searchQuery={searchQuery}
+            searchFilter={searchFilter}
           />
         )}
       </CardContent>

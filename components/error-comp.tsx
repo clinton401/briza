@@ -7,11 +7,11 @@ export const ErrorComp: FC<{ message: string }> = ({ message }) => {
   const pathname = usePathname();
   const { push } = useRouter();
   const navigationHandler = () => {
-    if (pathname !== "/") {
-      push("/");
-    } else {
+    // if (pathname !== "/") {
+    //   push("/");
+    // } else {
       window.location.reload();
-    }
+   
   };
   return (
     <div className=" min-h-dvh w-full overflow-hidden py-8 px-p-half flex flex-col flex-wrap items-center gap-4 justify-center ">
@@ -24,7 +24,7 @@ export const ErrorComp: FC<{ message: string }> = ({ message }) => {
         {message}
       </h2>
       <Button size="lg" onClick={navigationHandler}>
-        {pathname === "/" ? "REFRESH" : " GO TO HOMEPAGE"}
+        REFRESH
       </Button>
     </div>
   );

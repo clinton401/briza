@@ -72,6 +72,13 @@ export type PostWithDetails = {
   isFollowing: boolean;
 
 };
+export type BookmarksType = {
+  id: string;
+  post: PostWithDetails;
+  createdAt: Date;
+  userId: string;
+  postId: string
+}
 export type PostMetricsTypes =  {
   id: string;
   postId: string;
@@ -142,4 +149,33 @@ export type NotificationWithTriggeredBy = {
 };
 
 
+export type UserResponse = {
+  id: string;
+  name: string;
+  username: string | null;
+  coverPhotoUrl: string | null;
+  website: string | null;
+  websiteName: string | null;
+  blueCheckVerified: boolean;
+  profilePictureUrl: string | null;
+  profilePicturePublicId: string | null;
+  coverPhotoPublicId: string | null;
+  bio: string | null;
+  createdAt: Date;
+  metrics: {
+    followersCount: number;
+    followingCount: number;
+    postCount: number;
+  } | null;
+  isFollowing: boolean;
+};
 
+
+
+export type InputSearchUser = {
+  id: string;
+    username: string | null;
+    name: string;
+    profilePictureUrl: string | null;
+    blueCheckVerified: boolean;
+}

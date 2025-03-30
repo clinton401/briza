@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 
 type ModalsProps = {
   isOpen: boolean;
-  closeModal: (e?: React.MouseEvent<HTMLDivElement>) => void;
+  closeModal: (e?: any) => void;
   showCloseButton?: boolean;
   children: ReactNode;
 };
@@ -44,7 +44,8 @@ export const Modals: FC<ModalsProps> = ({ isOpen, closeModal, children, showClos
             <Button
               variant="outline"
               size="icon"
-              className="rounded-full absolute inset-0 "
+              className="rounded-full absolute inset-0 z-30 "
+              onClick={closeModal}
             >
               <X />
             </Button>)}

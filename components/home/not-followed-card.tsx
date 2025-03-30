@@ -8,7 +8,12 @@ import { HoverCardUI } from "@/components/hover-card-ui";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import useToggleFollow from "@/hooks/use-toggle-follow";
 import { dateHandler, getUppercaseFirstLetter } from "@/lib/random-utils";
-export const NotFollowedCard: FC<{ user: NotFollowedUsers }> = ({ user }) => {
+export const NotFollowedCard: FC<{
+  user: NotFollowedUsers;
+  bioNeeded?: boolean;
+  filter? : "FOLLOWERS" | "FOLLOWING";
+  followId?: string
+}> = ({ user, bioNeeded = false, filter, followId }) => {
   const {
     id,
     username,
@@ -18,7 +23,7 @@ export const NotFollowedCard: FC<{ user: NotFollowedUsers }> = ({ user }) => {
     bio,
     createdAt,
     blueCheckVerified,
-    hasFollowed
+    hasFollowed,
   } = user;
   if (
     !id ||
@@ -32,19 +37,23 @@ export const NotFollowedCard: FC<{ user: NotFollowedUsers }> = ({ user }) => {
     return null;
   const { push } = useRouter();
   const pathname = usePathname();
-  const {id: postId} = useParams();
-  const {mutate: toggleFollow} = useToggleFollow();
+  const { id: postId } = useParams();
+  const { mutate: toggleFollow } = useToggleFollow();
   const uppercase_name = getUppercaseFirstLetter(name);
   // const uppercase_username = getUppercaseFirstLetter(username);
   const joined_date = new Date(createdAt);
   const { year: joined_year, monthText } = dateHandler(joined_date);
   const followHandler = () => {
-     const validId = Array.isArray(postId) ? postId[0] : postId;
+    const validId = Array.isArray(postId) ? postId[0] : postId;
     toggleFollow(
       {
         userId: id,
         value: !hasFollowed,
-        postId: pathname.startsWith("/status/") && validId ? validId : undefined
+        postId:
+          pathname.startsWith("/status/") && validId ? validId : undefined,
+          
+      filter,
+      followId 
         // userId: post_owner_id
       },
       {
@@ -53,11 +62,11 @@ export const NotFollowedCard: FC<{ user: NotFollowedUsers }> = ({ user }) => {
         },
       }
     );
-  }
+  };
 
   return (
-    <div className="flex w-full gap-2 items-center  justify-between">
-      <div className="grow flex items-center gap-2">
+    <div className="flex w-full gap-2  flex-wrap  justify-between">
+      <div className="not_followed_text  flex  gap-2">
         <HoverCardUI
           profilePictureUrl={profilePictureUrl}
           username={username}
@@ -69,7 +78,7 @@ export const NotFollowedCard: FC<{ user: NotFollowedUsers }> = ({ user }) => {
           <Button
             variant="link"
             className="p-0"
-            onClick={() => push(`/user/${username}`)}
+            onClick={() => push(`/user/${id}`)}
           >
             {/* <Link href={`/user/${id}`} > */}
 
@@ -86,13 +95,14 @@ export const NotFollowedCard: FC<{ user: NotFollowedUsers }> = ({ user }) => {
           </Button>
         </HoverCardUI>
 
-        <div className=" w-[150px]  justify-center  flex flex-col gap-1 text-xs">
-          <span className=" flex truncate items-center">
+        <div className="  max-w-[400px] justify-center  flex flex-col gap-1 text-xs" id="not_followed_links">
+          {/* <span className=" flex w-full items-center"> */}
             <Link
-              href={`/user/${username}`}
-              className="  w-auto hover:underline   flex items-center"
+              href={`/user/${id}`}
+              className="  w-full truncate hover:underline   flex items-center"
             >
               {uppercase_name}
+              
 
               {blueCheckVerified && (
                 <span className="h-3 ml-1 aspect-square rounded-full bg-[#1DA1F2] flex items-center justify-center text-white">
@@ -100,40 +110,32 @@ export const NotFollowedCard: FC<{ user: NotFollowedUsers }> = ({ user }) => {
                 </span>
               )}
             </Link>
-          </span>
-          <span className=" flex truncate items-center">
+          {/* </span> */}
+          {/* <span className=" flex w-full items-center"> */}
             <Link
-              href={`/user/${username}`}
-              className="  w-auto hover:underline  text-muted-foreground"
+              href={`/user/${id}`}
+              className="  w-full truncate hover:underline  text-muted-foreground"
             >
               @{username}
             </Link>
-          </span>
-          {/* <Link
-            href={`/user/${username}`}
-            className="w-full  flex items-center truncate border"
-          >
-            {uppercase_name}
-            {blueCheckVerified && (
-              <span className="h-3 ml-1 aspect-square rounded-full bg-[#1DA1F2] flex items-center justify-center text-white">
-                <Check className="h-2 w-2" />
-              </span>
-            )}
-          </Link>
+          {/* </span> */}
+          {bioNeeded && (
+              <p className="  w-full  break-words whitespace-normal text-sm ">
+                {bio}
 
-          <Link
-            href={`/user/${username}`}
-            className="w-full flex truncate text-muted-foreground"
-          >
-            @{username}
-          </Link> */}
+                
+              </p>
+          )}
+      
         </div>
       </div>
-      <Button className="rounded-full text-sm " variant={hasFollowed ? "outline": "default"} onClick={followHandler}>
-        {hasFollowed ? "Unfollow": "Follow"}
-    
-        
-        </Button>
+      <Button
+        className="rounded-full text-sm "
+        variant={hasFollowed ? "outline" : "default"}
+        onClick={followHandler}
+      >
+        {hasFollowed ? "Unfollow" : "Follow"}
+      </Button>
     </div>
   );
 };

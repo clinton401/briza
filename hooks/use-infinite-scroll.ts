@@ -36,7 +36,7 @@ import {
       signal: AbortSignal;
     }) => Promise<TQueryFnData>,
     queryKey: string[],
-    options?: UseInfiniteQueryOptions<TQueryFnData, Error, TQueryFnData>
+    options?: Partial<UseInfiniteQueryOptions<TQueryFnData, Error, TQueryFnData>>
   ): InfiniteScrollResult<TData> => {
     const {
       data,

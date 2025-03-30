@@ -17,12 +17,20 @@ type PostMetricsProps = {
   hasBookmarked: boolean;
   metrics: PostMetricsTypes
   postDetails: PostWithDetails;
+  userId?: string;
+  sessionId: string;
+  searchQuery?: string;
+   searchFilter?: "TOP" | "LATEST" | "MEDIA",
 };
 export const PostMetrics: FC<PostMetricsProps> = ({
   metrics,
   hasLiked,
   hasBookmarked,
-  postDetails
+  postDetails,
+  userId,
+  searchFilter,
+  searchQuery,
+  sessionId
 }) => {
   const { likesCount, commentsCount, bookmarksCount, viewsCount } = metrics;
 
@@ -33,6 +41,10 @@ export const PostMetrics: FC<PostMetricsProps> = ({
       {
         postId: postDetails.id,
         value: !postDetails.hasBookmarked,
+        searchFilter,
+        searchQuery,
+        userId,
+        sessionId
       },
       {
         onError: (error) => {
@@ -46,7 +58,11 @@ export const PostMetrics: FC<PostMetricsProps> = ({
       {
         postId: postDetails.id,
         value: !postDetails.hasLiked,
+        searchFilter,
+        searchQuery,
         postOwnerId: postDetails.user.id, 
+        userId,
+        sessionId
       },
       {
         onError: (error) => {

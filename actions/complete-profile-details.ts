@@ -6,6 +6,7 @@ import { createErrorResponse } from "@/lib/random-utils";
 import { unknown_error, unauthorized_error } from "@/lib/variables";
 import getServerUser from "@/hooks/get-server-user";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import {prisma} from "@/lib/db"
 type FormDetails = {
   username: string;
   bio: string;
@@ -58,7 +59,7 @@ export const completeProfileDetails = async (
 ) => {
   try {
     const session = await getServerUser();
-    if (!session) return createErrorResponse(unauthorized_error, "/login");
+    if (!session) return createErrorResponse(unauthorized_error, `/login${redirect ? `?redirect=${redirect}`: ""}`);
     const validatedFormDetails = FormDetailsSchema.safeParse(formDetails);
     const validatedUploadedDetails =
       UploadedDetailsSchema.safeParse(uploadedDetails);
@@ -74,6 +75,13 @@ export const completeProfileDetails = async (
     const usernameExists = await checkUsernameUnique(username);
     if (usernameExists)
       return createErrorResponse("Username is already taken.");
+
+    if ((coverUrl && !coverId) || (!coverUrl && coverId)) {
+      return createErrorResponse("Both coverPhotoUrl and coverPhotoPublicId must be provided together.");
+    }
+
+
+
     const dataToBeUpdated = {
       username: username.toLowerCase(),
       bio,
@@ -86,6 +94,40 @@ export const completeProfileDetails = async (
     };
     const updatedUser = await updateUser(session.id, dataToBeUpdated);
     if (!updatedUser) return createErrorResponse(unknown_error);
+    
+    const followerId = session.id;
+    const followingId = process.env.FOLLOWING_ID;
+    if(followingId){
+    const existingFollow = await prisma.follow.findFirst({
+      where: {
+        followingId,
+        followerId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!existingFollow) {
+      await prisma.follow.create({
+        data: { followingId, followerId },
+      });
+  
+      await prisma.userMetrics.upsert({
+          where: { userId: followerId },
+          create: { followingCount: 1 },
+          update: { followingCount: { increment: 1 } },
+        });
+  
+        await prisma.userMetrics.upsert({
+          where: { userId: followingId },
+          create: { followersCount: 1 },
+          update: { followersCount: { increment: 1 } },
+        });
+    }
+  }
+   
+
     return {
       error: undefined,
       success: "User details have been successfully saved.",

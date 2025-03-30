@@ -62,7 +62,7 @@ export const NotificationCard: FC<{
               className="p-0"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
-                push(`/user/${triggeredBy.username}`);
+                push(`/user/${triggeredBy.id}`);
               }}
             >
               {/* <Link href={`/user/${id}`} > */}
@@ -87,7 +87,7 @@ export const NotificationCard: FC<{
           <p className={`text-sm `}>
             <Link
               className="font-semibold hover:underline"
-              href={`/user/${triggeredBy.username}`}
+              href={`/user/${triggeredBy.id}`}
               onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
                 e.stopPropagation();
               }}
@@ -132,7 +132,7 @@ export const NotificationCard: FC<{
               className="p-0"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
-                push(`/user/${triggeredBy.username}`);
+                push(`/user/${triggeredBy.id}`);
               }}
             >
               {/* <Link href={`/user/${id}`} > */}
@@ -157,7 +157,7 @@ export const NotificationCard: FC<{
           <p className={`text-sm `}>
             <Link
               className="font-semibold hover:underline"
-              href={`/user/${triggeredBy.username}`}
+              href={`/user/${triggeredBy.id}`}
               onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
                 e.stopPropagation();
               }}
@@ -202,7 +202,7 @@ export const NotificationCard: FC<{
               className="p-0"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
-                push(`/user/${triggeredBy.username}`);
+                push(`/user/${triggeredBy.id}`);
               }}
             >
               {/* <Link href={`/user/${id}`} > */}
@@ -227,7 +227,7 @@ export const NotificationCard: FC<{
           <p className={`text-sm `}>
             <Link
               className="font-semibold hover:underline"
-              href={`/user/${triggeredBy.username}`}
+              href={`/user/${triggeredBy.id}`}
               onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
                 e.stopPropagation();
               }}
@@ -272,7 +272,7 @@ export const NotificationCard: FC<{
               className="p-0"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
-                push(`/user/${triggeredBy.username}`);
+                push(`/user/${triggeredBy.id}`);
               }}
             >
               {/* <Link href={`/user/${id}`} > */}
@@ -297,7 +297,7 @@ export const NotificationCard: FC<{
           <p className={`text-sm `}>
             <Link
               className="font-semibold hover:underline"
-              href={`/user/${triggeredBy.username}`}
+              href={`/user/${triggeredBy.id}`}
               onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
                 e.stopPropagation();
               }}
@@ -342,7 +342,7 @@ export const NotificationCard: FC<{
               className="p-0"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
-                push(`/user/${triggeredBy.username}`);
+                push(`/user/${triggeredBy.id}`);
               }}
             >
               {/* <Link href={`/user/${id}`} > */}
@@ -367,7 +367,7 @@ export const NotificationCard: FC<{
           <p className={`text-sm `}>
             <Link
               className="font-semibold hover:underline"
-              href={`/user/${triggeredBy.username}`}
+              href={`/user/${triggeredBy.id}`}
               onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
                 e.stopPropagation();
               }}

@@ -139,6 +139,13 @@ width: calc(100% - 55px)
 
   left: 20rem;
 }
+.not_followed_text {
+  width: calc(100% - 100px);
+  /* border: 1px solid red; */
+}
+#not_followed_links {
+width: calc(100% - 50px)
+}
 .leap-frog {
   --uib-size: 30px;
   --uib-speed: 2s;

@@ -23,6 +23,7 @@ export const Images: FC<ImagesProps> = ({ imgSrc, alt, contain = false , gif = f
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         className={`w-full h-full ${contain? "object-contain": "object-cover"}  overflow-hidden rounded object-center `}
         fill={true}
+        unoptimized={gif}
         onLoad={() => setIsLoading(false)} 
       />
       {isLoading && <Skeleton className="h-full w-full" />}

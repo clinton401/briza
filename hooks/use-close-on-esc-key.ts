@@ -17,7 +17,7 @@ const useCloseOnEscKey = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, setIsOpen]);
+  }, [isOpen]);
 
   useEffect(() => {
 

@@ -71,7 +71,7 @@ export const followOrUnfollowUser = async (
           metricsFollowing?.followersCount > 0
         ) {
           await tx.userMetrics.update({
-            where: { userId: followerId },
+            where: { userId: followingId },
             data: {
               followersCount: { decrement: 1 },
             },

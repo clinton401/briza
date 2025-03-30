@@ -96,7 +96,7 @@ const {mutate: toggleLike} = useToggleCommentLike();
                 <Button
                   variant="link"
                   className="p-0"
-                  onClick={() => push(`/user/${reply_owner_username}`)}
+                  onClick={() => push(`/user/${reply_owner_id}`)}
                 >
                   {/* <Link href={`/user/${id}`} > */}
   
@@ -116,7 +116,7 @@ const {mutate: toggleLike} = useToggleCommentLike();
               <span className=" h-full w-3/4 truncate overflow-hidden  justify-center flex flex-col gap-1 text-xs">
                 <span className=" flex truncate items-center">
                   <Link
-                    href={`/user/${reply_owner_username}`}
+                    href={`/user/${reply_owner_id}`}
                     className="  w-auto hover:underline   flex items-center"
                   >
                     {uppercase_name}

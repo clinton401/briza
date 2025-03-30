@@ -14,9 +14,6 @@ import { notable } from "@/lib/fonts";
 import { NotificationCard } from "./notification-card";
 import { markNotificationsAsRead } from "@/actions/mark-notifications-as-read";
 import { useQueryClient } from "@tanstack/react-query";
-import { hasAtLeastOneProperty } from "@/lib/random-utils";
-
-import { supabase } from "@/lib/supabase";
 type FetchNotificationsResult = {
   data: NotificationWithTriggeredBy[];
   nextPage?: number;
@@ -30,7 +27,7 @@ type NewNotificationEvent = {
   url: string;
   userId: string;
 };
-type NotificationEvent = {
+export type NotificationEvent = {
   schema: string;
   table: string;
   commit_timestamp: string;
@@ -98,62 +95,33 @@ export const NotificationPageUI: FC<{ session: SessionType }> = ({
             cancelRefetch: true,
           }
         );
+        await queryClient.invalidateQueries(
+          {
+            queryKey: ["notifications-count"],
+            exact: true,
+            refetchType: "active",
+          },
+          {
+            throwOnError: true,
+            cancelRefetch: true,
+          }
+        );
       }
     } catch (error) {
       console.error(`Unable to mark notifications as read: ${error}`);
     }
   };
   useEffect(() => {
-    if (!isFetching) {
+    if (!isLoading) {
       handleUnreadNotifications();
     }
-  }, [isFetching]);
+  }, [isLoading]);
   useEffect(() => {
     if (inView && !isFetchingNextPage && hasNextPage) {
       fetchNextPage();
     }
   }, [fetchNextPage, inView, isFetchingNextPage, hasNextPage]);
-  useEffect(() => {
-    const channel = supabase.channel("custom-all-channel");
 
-    channel.on(
-      "postgres_changes",
-      { event: "INSERT", schema: "public", table: "Notification" },
-      async (payload) => {
-        const data = payload as NotificationEvent;
-        const isNewAvailable = hasAtLeastOneProperty(data.new);
-        if (data.errors) return;
-        if (
-          isNewAvailable &&
-          "userId" in data.new &&
-          data.new.userId === session.id
-        ) {
-          await queryClient.invalidateQueries(
-            {
-              queryKey: ["notifications"],
-              exact: true,
-              refetchType: "active",
-            },
-            {
-              throwOnError: true,
-              cancelRefetch: true,
-            }
-          );
-        }
-      }
-    );
-    channel.subscribe((status, error) => {
-      if (error) {
-        console.error("Subscription error:", error, status);
-      }
-    });
-
-    return () => {
-      channel
-        .unsubscribe()
-        .catch((error) => console.error("Error unsubscribing:", error));
-    };
-  }, []);
 
   if (isLoading)
     return (

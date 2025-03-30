@@ -79,3 +79,27 @@ success: false,
 data: undefined
     }
   }
+
+
+  export const calculatePagination = (page?: number , pageSize= 15) => {
+    const currentPage = Math.max(1, Number(page) || 1);
+            const offset = (currentPage - 1) * pageSize;
+
+            return {currentPage, offset, pageSize}
+  }
+
+  export const calculateNextPage = (currentPage: number, total: number, pageSize: number) => {
+    const totalPages = Math.ceil(total / pageSize);
+            const nextPage = currentPage < totalPages ? currentPage + 1 : null;
+            return {totalPages, nextPage}
+  }
+
+  export  function removeDuplicates<T extends { id: string }>(arr: T[]): T[] {
+    const uniqueMap = new Map<string, T>();
+    for (const item of arr) {
+      if (!uniqueMap.has(item.id)) {
+        uniqueMap.set(item.id, item);
+      }
+    }
+    return Array.from(uniqueMap.values());
+  }
