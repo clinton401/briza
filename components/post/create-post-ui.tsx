@@ -352,7 +352,7 @@ export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, cl
     }
   };
   return (
-    <section className={`w-full ${borderNeeded ? "border-y" : ""} relative  px-p-half hidden sm:flex py-4 gap-4 `}>
+    <section className={`w-full ${borderNeeded ? "border-y" : ""} relative flex  px-p-half  py-4 gap-4 `}>
       <Avatar>
         <AvatarImage src={session?.profilePictureUrl || ""} alt="User profile picture" />
         <AvatarFallback>

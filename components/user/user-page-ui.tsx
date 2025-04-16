@@ -22,7 +22,8 @@ import useCloseOnEscKey from "@/hooks/use-close-on-esc-key";
 import useToggleFollow from "@/hooks/use-toggle-follow";
 import Link from "next/link";
 import {UserPagePosts} from "@/components/user/user-page-posts";
-import {UserEditSheet} from "@/components/user/user-edit-sheet"
+import {UserEditSheet} from "@/components/user/user-edit-sheet";
+import { getUppercaseFirstLetter } from "@/lib/random-utils";
 type DialogType = ImageModal & {
     isProfile: boolean
 }
@@ -61,6 +62,7 @@ export const UserPageUI: FC<UserPageUIProps> = ({ session, id }) => {
     data: user,
     error,
     isLoading,
+    refetch
   } = fetchData<UserResponse, UserQueryKey>(
     ["user", id],
     fetchUser,
@@ -106,7 +108,7 @@ export const UserPageUI: FC<UserPageUIProps> = ({ session, id }) => {
   }
   if (error || !user) {
     const errorMessage = error?.message || unknown_error;
-    return <ErrorComp message={errorMessage} />;
+    return <ErrorComp message={errorMessage} refetch={refetch}/>;
   }
   const backHandler = () => {
     if (window.history.length > 1) {
@@ -146,11 +148,11 @@ const tabs = ["Posts", "Likes", "Bookmarks"]
             className="rounded-full items-center justify-center border-none"
             onClick={backHandler}
           >
-            <ArrowLeft className="mr-1" />
+            <ArrowLeft  />
           </Button>
           <span className="flex  gap-1 flex-col">
             <h2 className={`font-bold text-lg ${notable.className}`}>
-              {user.name}
+              {getUppercaseFirstLetter(user.name)}
             </h2>
             <p className="text-xs">
               {formatNumber(user.metrics?.postCount || 0)} posts
@@ -213,7 +215,7 @@ const tabs = ["Posts", "Likes", "Bookmarks"]
       </section>
       <section className="pt-[25px]  w-full px-p-half flex flex-col gap-3">
 <div className="w-full flex-col gap-1  flex">
-    <h2 className={`${notable.className} font-black flex items-center`}>{user.name} {user.blueCheckVerified && (
+    <h2 className={`${notable.className} font-black flex items-center`}>{getUppercaseFirstLetter(user.name)} {user.blueCheckVerified && (
                     <span className="h-3 ml-1 aspect-square rounded-full bg-[#1DA1F2] flex items-center justify-center text-white">
                       <Check className="h-2 w-2" />
                     </span>

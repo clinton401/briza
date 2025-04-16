@@ -1,19 +1,21 @@
 "use client";
-import { FC, useEffect } from "react";
+import { markNotificationsAsRead } from "@/actions/mark-notifications-as-read";
+import { Button } from "@/components/ui/button";
+import useInfiniteScroll from "@/hooks/use-infinite-scroll";
+import { notable } from "@/lib/fonts";
 import {
   NotificationType,
   NotificationWithTriggeredBy,
   SessionType,
+  PostWithDetails
 } from "@/lib/types";
 import { unknown_error } from "@/lib/variables";
-import useInfiniteScroll from "@/hooks/use-infinite-scroll";
-import { Loader, BellDot } from "lucide-react";
-import { useInView } from "react-intersection-observer";
-import { Button } from "@/components/ui/button";
-import { notable } from "@/lib/fonts";
-import { NotificationCard } from "./notification-card";
-import { markNotificationsAsRead } from "@/actions/mark-notifications-as-read";
 import { useQueryClient } from "@tanstack/react-query";
+import { BellDot, Loader } from "lucide-react";
+import { FC, useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+import { NotificationCard } from "./notification-card";
+
 type FetchNotificationsResult = {
   data: NotificationWithTriggeredBy[];
   nextPage?: number;
@@ -33,8 +35,8 @@ export type NotificationEvent = {
   commit_timestamp: string;
   eventType: "INSERT" | "UPDATE" | "DELETE";
   new: NewNotificationEvent | {};
-  old: Record<string, any> | null;
-  errors: any;
+  old: Record<string, string> | null;
+  errors: string | null;
 };
 const fetchNotifications = async ({
   pageParam = 1,

@@ -4,12 +4,12 @@ import { QueryClient, QueryClientProvider, QueryCache, MutationCache } from "@ta
 const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 1000 * 60, // 1 minute
-        cacheTime: 1000 * 60 * 5, // 5 minutes
+        staleTime: 1000 * 60, 
         refetchOnWindowFocus: false,
-      } as any,
+      },
     },
   });
+  
   
 
 export const TanstackQueryClient: FC<{ children: ReactNode }> = ({ children }) => {

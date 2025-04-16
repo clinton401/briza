@@ -12,8 +12,10 @@ export const NotFollowedCard: FC<{
   user: NotFollowedUsers;
   bioNeeded?: boolean;
   filter? : "FOLLOWERS" | "FOLLOWING";
-  followId?: string
-}> = ({ user, bioNeeded = false, filter, followId }) => {
+  followId?: string;
+  userId: string;
+  searchQuery?: string
+}> = ({ user, bioNeeded = false, filter, followId, userId, searchQuery }) => {
   const {
     id,
     username,
@@ -53,7 +55,8 @@ export const NotFollowedCard: FC<{
           pathname.startsWith("/status/") && validId ? validId : undefined,
           
       filter,
-      followId 
+      followId ,
+      searchQuery
         // userId: post_owner_id
       },
       {
@@ -129,13 +132,16 @@ export const NotFollowedCard: FC<{
       
         </div>
       </div>
-      <Button
-        className="rounded-full text-sm "
-        variant={hasFollowed ? "outline" : "default"}
-        onClick={followHandler}
-      >
-        {hasFollowed ? "Unfollow" : "Follow"}
-      </Button>
+      {userId !== id && (
+
+<Button
+className="rounded-full text-sm "
+variant={hasFollowed ? "outline" : "default"}
+onClick={followHandler}
+>
+{hasFollowed ? "Unfollow" : "Follow"}
+</Button>
+      )}
     </div>
   );
 };

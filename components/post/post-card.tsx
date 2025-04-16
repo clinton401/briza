@@ -1,5 +1,5 @@
 "use client";
-import { FC, useState, Dispatch, SetStateAction, useEffect } from "react";
+import { FC, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -19,7 +19,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { followOrUnfollowUser } from "@/actions/follow-or-unfollow-user";
 import {
   User2,
   Check,
@@ -97,7 +96,7 @@ export const PostCard: FC<{
   const uppercase_username = getUppercaseFirstLetter(post_owner_username);
   const joined_date = new Date(post_owner_account_created_at);
   const { year: joined_year, monthText } = dateHandler(joined_date);
-  const postCreatedDate = new Date(createdAt);
+  const postCreatedDate = new Date(createdAt); 
   const { amount, type } = timeAgoNumber(postCreatedDate);
   const {
     monthText: postMonthText,
@@ -364,7 +363,7 @@ export const PostCard: FC<{
           </div>
           {isHomePage ? (
             <>
-              {type !== "wk" ? (
+              {type !== "w" ? (
                 <h6 className="text-xs">
                   {amount}
                   {type}

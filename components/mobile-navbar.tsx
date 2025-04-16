@@ -10,14 +10,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export const MobileNavbar:FC<{ session: SessionType | undefined,
+export const MobileNavbar: FC<{
+  session: SessionType | undefined;
   isLoading: boolean;
   error: Error | null;
-  notificationsCount: number | undefined
- }> = ({
-  session,
-  isLoading, error, notificationsCount
-}) => {
+  notificationsCount: number | undefined;
+}> = ({ session, isLoading, error, notificationsCount }) => {
   if (!session) return;
   const pathname = usePathname();
 
@@ -85,6 +83,9 @@ export const MobileNavbar:FC<{ session: SessionType | undefined,
     //   ),
     // },
   ];
+
+  const isChatPage = /^\/messages\/[^/]+$/.test(pathname);
+  if (isChatPage) return;
   return (
     <aside className="fixed bottom w-full left-0 bottom-0 py-4 bg-background border">
       <ul className="w-full flex items-center justify-evenly ">
@@ -95,14 +96,15 @@ export const MobileNavbar:FC<{ session: SessionType | undefined,
               <Link href={link.url} className="text-2xl">
                 {pathname === link.url ? <link.active /> : <link.not_active />}
               </Link>
-              {
-                link.title === "Notifications" &&
-                    !isLoading &&
-                    !error &&
-                    notificationsCount !== undefined && 
-                    notificationsCount > 0 && (
-                      <p className="h-5 w-5 absolute bottom-[60%] left-[50%] rounded-full bg-destructive flex items-center justify-center">{notificationsCount}</p>
-                    )}
+              {link.title === "Notifications" &&
+                !isLoading &&
+                !error &&
+                notificationsCount !== undefined &&
+                notificationsCount > 0 && (
+                  <p className="h-5 w-5 absolute bottom-[60%] left-[50%] rounded-full bg-destructive flex items-center justify-center">
+                      {notificationsCount > 99 ? "99+": notificationsCount}
+                  </p>
+                )}
             </li>
           );
         })}
@@ -114,7 +116,7 @@ export const MobileNavbar:FC<{ session: SessionType | undefined,
                 alt="User profile picture"
               />
               <AvatarFallback>
-                <User2 className="h-4 w-4"/>
+                <User2 className="h-4 w-4" />
               </AvatarFallback>
             </Avatar>
           </Link>

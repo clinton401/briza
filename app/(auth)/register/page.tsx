@@ -1,6 +1,11 @@
 import {FC} from 'react'
 import { FormWrapper } from "@/components/auth/form-wrapper";
 import { RegisterForm } from '@/components/auth/register-form';
+export const metadata = {
+  title: 'Create an Account',
+  description: 'Join Briza and start sharing your thoughts, following others, and being part of the conversation.',
+};
+
  const RegisterPage: FC<{searchParams: {
   redirect?: string
 }}> = async ({searchParams}) => {

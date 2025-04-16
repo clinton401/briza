@@ -19,7 +19,7 @@ export type RedditPost = {
     gilded: number;
     clicked: boolean;
     title: string;
-    link_flair_richtext: any[]; // Adjust type if the exact structure is known
+    link_flair_richtext: string[]; // Adjust type if the exact structure is known
     subreddit_name_prefixed: string;
     hidden: boolean;
     pwls: number;
@@ -40,7 +40,7 @@ export type RedditPost = {
     thumbnail_width: number | null;
     author_flair_template_id: string | null;
     is_original_content: boolean;
-    user_reports: any[]; // Adjust type if the exact structure is known
+    user_reports: string[]; // Adjust type if the exact structure is known
     secure_media: {
       reddit_video?: {
         bitrate_kbps: number;
@@ -69,7 +69,7 @@ export type RedditPost = {
     thumbnail: string;
     edited: boolean;
     author_flair_css_class: string | null;
-    author_flair_richtext: any[]; // Adjust type if the exact structure is known
+    author_flair_richtext: string[]; // Adjust type if the exact structure is known
     gildings: Record<string, unknown>;
     post_hint: string | null;
     content_categories: string | null;
@@ -111,8 +111,8 @@ export type RedditPost = {
       }>;
       enabled: boolean;
     };
-    all_awardings: any[]; // Adjust type if the exact structure is known
-    awarders: any[]; // Adjust type if the exact structure is known
+    all_awardings: string[]; // Adjust type if the exact structure is known
+    awarders: string[]; // Adjust type if the exact structure is known
     media_only: boolean;
     can_gild: boolean;
     spoiler: boolean;
@@ -130,13 +130,13 @@ export type RedditPost = {
     link_flair_background_color: string;
     id: string;
     is_robot_indexable: boolean;
-    report_reasons: any[] | null;
+    report_reasons: string[] | null;
     author: string;
     discussion_type: string | null;
     num_comments: number;
     send_replies: boolean;
     contest_mode: boolean;
-    mod_reports: any[]; // Adjust type if the exact structure is known
+    mod_reports: string[]; // Adjust type if the exact structure is known
     author_patreon_flair: boolean;
     author_flair_text_color: string | null;
     permalink: string;

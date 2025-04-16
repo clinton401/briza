@@ -12,13 +12,14 @@ import {
 import { motion } from "motion/react";
 import { IoMdHeart } from "react-icons/io";
 import { NotificationWithTriggeredBy, NotificationType } from "@/lib/types";
-import { timeAgoNumber, dateHandler } from "@/lib/random-utils";
+import { timeAgoNumber, dateHandler, getUppercaseFirstLetter } from "@/lib/random-utils";
 import { Button } from "@/components/ui/button";
 import { HoverCardUI } from "@/components/hover-card-ui";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LiaComments } from "react-icons/lia";
 import Link from "next/link";
+
 export const NotificationCard: FC<{
   notification: NotificationWithTriggeredBy;
   index: number;
@@ -92,7 +93,7 @@ export const NotificationCard: FC<{
                 e.stopPropagation();
               }}
             >
-              {triggeredBy.name}
+              {getUppercaseFirstLetter(triggeredBy.name)}
             </Link>{" "}
             liked your post
           </p>
@@ -162,7 +163,7 @@ export const NotificationCard: FC<{
                 e.stopPropagation();
               }}
             >
-              {triggeredBy.name}
+              {getUppercaseFirstLetter(triggeredBy.name)}
             </Link>{" "}
             liked your comment
           </p>
@@ -232,7 +233,7 @@ export const NotificationCard: FC<{
                 e.stopPropagation();
               }}
             >
-              {triggeredBy.name}
+              {getUppercaseFirstLetter(triggeredBy.name)}
             </Link>{" "}
             commented on your post
           </p>
@@ -302,7 +303,7 @@ export const NotificationCard: FC<{
                 e.stopPropagation();
               }}
             >
-              {triggeredBy.name}
+              {getUppercaseFirstLetter(triggeredBy.name)}
             </Link>{" "}
            replied to your comment
           </p>
@@ -372,7 +373,7 @@ export const NotificationCard: FC<{
                 e.stopPropagation();
               }}
             >
-              {triggeredBy.name}
+              {getUppercaseFirstLetter(triggeredBy.name)}
             </Link>{" "}
             started following you
           </p>

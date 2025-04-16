@@ -141,7 +141,34 @@ export const AppSidebar: FC<{
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {items.map((item) => {
+                if(item.title === "Messages" || item.title === "Notifications"){
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild>
+                        <Link
+                          href={item.url}
+                          className={`${
+                            pathname.startsWith(item.url) ? "bg-sidebar-hover" : ""
+                          }`}
+                        >
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                      {item.title === "Notifications" &&
+                        !isLoading &&
+                        !error &&
+                        notificationsCount !== undefined &&
+                        notificationsCount > 0 && (
+                          <SidebarMenuBadge className="h-5 w-5  rounded-full bg-destructive flex items-center justify-center">
+                            {notificationsCount > 99 ? "99+": notificationsCount}
+                          </SidebarMenuBadge>
+                        )}
+                    </SidebarMenuItem>
+                  )
+                }
+                return (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link
@@ -164,7 +191,7 @@ export const AppSidebar: FC<{
                       </SidebarMenuBadge>
                     )}
                 </SidebarMenuItem>
-              ))}
+              )})}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

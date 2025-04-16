@@ -1,6 +1,11 @@
 import { FC } from "react";
 import { LoginForm } from "@/components/auth/login-form";
 import { FormWrapper } from "@/components/auth/form-wrapper";
+export const metadata = {
+  title: 'Login',
+  description: 'Access your Briza account and stay connected with the world in real time.',
+};
+
 const LoginPage: FC<{searchParams: {
   redirect?: string
 }}> = async ({searchParams}) => {

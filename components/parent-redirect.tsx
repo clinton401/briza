@@ -14,7 +14,7 @@ export const ParentRedirect: FC<{
 }> = ({ session, children }) => {
   const { push } = useRouter();
   const pathname = usePathname();
-const unreadCount = useHandleUnreadCount(session);
+  const unreadCount = useHandleUnreadCount(session);
   const isApiAuthRoute = pathname.startsWith(apiAuthPrefix);
   const isAuthRoute =
     authRoutes.some((route) => pathname.startsWith(route)) ||
@@ -56,7 +56,8 @@ const unreadCount = useHandleUnreadCount(session);
   useEffect(() => {
     handleRedirect();
   }, [session, pathname, redirect]);
-
+  const isMessageOrSettingsPage =
+    pathname.startsWith("/message") || pathname.startsWith("/settings");
   return (
     <>
       {isAuthRoute ? (
@@ -64,15 +65,18 @@ const unreadCount = useHandleUnreadCount(session);
       ) : (
         <>
           <div className="flex md:hidden w-full">
-            
             {children}
-            <MobileNavbar session={session} {...unreadCount}/>
-            </div>
-          <div className="hidden md:flex  w-full   lg:pl-0  lg:pr-[20rem]">
+            <MobileNavbar session={session} {...unreadCount} />
+          </div>
+          <div
+            className={`hidden md:flex  w-full ${
+              !isMessageOrSettingsPage ? " lg:pl-0  lg:pr-[20rem]" : ""
+            } `}
+          >
             <SidebarProvider>
-              <AppSidebar session={session} {...unreadCount}/>
-              <SidebarTrigger /> {children}  
-              <HomeAside />{" "}
+              <AppSidebar session={session} {...unreadCount} />
+              <SidebarTrigger /> {children}
+              {!isMessageOrSettingsPage && <HomeAside session={session as SessionType} />}
             </SidebarProvider>
           </div>
         </>

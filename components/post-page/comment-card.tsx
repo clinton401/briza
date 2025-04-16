@@ -168,13 +168,13 @@ const {mutate: toggleLike} = useToggleCommentLike();
       const { error, success, data } = result;
       if (error || !success || !data)
         return createError(error || unknown_error);
-      queryClient.setQueryData(["comment-replies", comment.id], (old: any) => {
-        if (!old) return old;
-        const newData = [data, ...old];
-        return newData;
-      });
-
-      await queryClient.invalidateQueries(
+      // queryClient.setQueryData(["comment-replies", comment.id], (old: CommentWithUserAndFollowers| null) => {
+      //   if (!old) return old;
+      //   const newData = [data, ...old];
+      //   return newData;
+      // });
+      await Promise.all([
+  queryClient.invalidateQueries(
         {
           queryKey: ["comment-replies", comment.id],
           exact: true,
@@ -184,8 +184,8 @@ const {mutate: toggleLike} = useToggleCommentLike();
           throwOnError: true,
           cancelRefetch: true,
         }
-      );
-      await queryClient.invalidateQueries(
+      ),
+       queryClient.invalidateQueries(
         {
           queryKey: ["comments", post.id, filter],
           exact: true,
@@ -195,7 +195,10 @@ const {mutate: toggleLike} = useToggleCommentLike();
           throwOnError: true,
           cancelRefetch: true,
         }
-      );
+      )
+      ])
+
+     
       setReplyContent("");
       setShowReply(true);
       replyModalHandler();

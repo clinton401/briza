@@ -1,7 +1,12 @@
 import {FC} from "react";
 import { NotificationPageUI } from "@/components/notifications/notification-page-ui";
 import {notable} from "@/lib/fonts";
-import getServerUser from "@/hooks/get-server-user"
+import getServerUser from "@/hooks/get-server-user";
+export const metadata = {
+    title: 'Notifications',
+    description: 'Stay up to date with the latest activity on your posts, mentions, and interactions.',
+  };
+  
 const NotificationPage: FC =async() => {
     const session = await getServerUser();
     if(!session) return;

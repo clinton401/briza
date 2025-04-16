@@ -1,7 +1,7 @@
 "use client";
 import { FC } from "react";
 import { notable } from "@/lib/fonts";
-import type { NotFollowedUsers } from "@/lib/types";
+import type { NotFollowedUsers, SessionType } from "@/lib/types";
 import { NotFollowedCard } from "@/components/home/not-followed-card";
 import { SuggestionLoader } from "@/components/loaders/suggestion-loaders";
 import { unknown_error } from "@/lib/variables";
@@ -20,7 +20,7 @@ const fetchUsers = async ({
   const data = await response.json();
   return data.users;
 };
-export const HomeAside: FC = () => {
+export const HomeAside: FC<{session: SessionType}> = ({session}) => {
   const {
     error,
     isLoading,
@@ -62,7 +62,7 @@ export const HomeAside: FC = () => {
                       {users.map((user) => {
                         return (
                           <div key={user.username} className="w-full">
-                            <NotFollowedCard user={user} />
+                            <NotFollowedCard user={user} userId={session.id}/>
                           </div>
                         );
                       })}

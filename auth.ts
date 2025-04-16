@@ -2,8 +2,6 @@ import NextAuth from "next-auth";
 import authConfig from "@/auth.config";
 import { hasAtLeastOneProperty } from "@/lib/random-utils";
 import { findUnique, createUser, updateUser } from "@/data/users";
-import { prisma } from "@/lib/db";
-import { PrismaAdapter } from "@auth/prisma-adapter"
 import { Session } from "next-auth";
 export const { handlers, signIn, signOut, auth } = NextAuth({
     // adapter: PrismaAdapter(prisma),
@@ -90,7 +88,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         
         user = await findUnique(token.sub, true);
       }
-      // console.log(user)
+      // console.log({user})
       if (user) {
           token.email = user.email
           token.sub = user.id;
@@ -117,6 +115,7 @@ token.blueCheckVerified = user.blueCheckVerified;
       return token;
     },
     async session({ token, session }: { session: Session; token: any }) {
+      // console.log({session, token})
         if (!token || !session?.user) return session;
 
         if(token.email) {

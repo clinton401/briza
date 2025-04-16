@@ -62,8 +62,6 @@ model User {
   @@index([username, email])
 }
 
-
-
 model Follow {
   id          String   @id @default(uuid())
   followerId  String
@@ -88,6 +86,7 @@ model EmailVerification {
 
   @@index([id, token])
 }
+
 model TwoFA {
   id        String   @id @default(uuid())
   token     String   @unique @db.Char(6)
@@ -124,14 +123,14 @@ model PostMedia {
 }
 
 model Post {
-  id        String   @id @default(uuid())
-  content   String?  @db.Text
-  createdAt DateTime @default(now())
+  id        String    @id @default(uuid())
+  content   String?   @db.Text
+  createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-  isEdited  Boolean  @default(false)
-  audience  Audience @default(PUBLIC)
+  isEdited  Boolean   @default(false)
+  audience  Audience  @default(PUBLIC)
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
 
   media     PostMedia[]
   comments  Comment[]
@@ -139,7 +138,6 @@ model Post {
   likes     Like[]
   bookmarks Bookmark[]
   views     View[]
-  
 
   @@index([id, userId])
 }
@@ -147,9 +145,9 @@ model Post {
 model UserMetrics {
   id             String @id @default(uuid())
   userId         String @unique
-  followersCount Int?    @default(0)
-  followingCount Int?    @default(0)
-  postCount      Int?    @default(0)
+  followersCount Int?   @default(0)
+  followingCount Int?   @default(0)
+  postCount      Int?   @default(0)
   user           User?  @relation(fields: [userId], references: [id])
 
   @@index([userId])
@@ -158,35 +156,36 @@ model UserMetrics {
 model PostMetrics {
   id             String @id @default(uuid())
   postId         String @unique
-  likesCount     Int?    @default(0)
-  commentsCount  Int?    @default(0)
-  bookmarksCount Int?    @default(0)
-  viewsCount     Int?    @default(0)
+  likesCount     Int?   @default(0)
+  commentsCount  Int?   @default(0)
+  bookmarksCount Int?   @default(0)
+  viewsCount     Int?   @default(0)
   post           Post?  @relation(fields: [postId], references: [id])
 
   @@index([postId])
 }
+
 model CommentMetrics {
-  id   String @id @default(uuid())
-  commentId String @unique
-  likesCount Int? @default(0)
-  repliesCount Int? @default(0)
-  comment Comment? @relation(fields: [commentId], references: [id])
+  id           String   @id @default(uuid())
+  commentId    String   @unique
+  likesCount   Int?     @default(0)
+  repliesCount Int?     @default(0)
+  comment      Comment? @relation(fields: [commentId], references: [id])
 }
 
 model Comment {
-  id              String    @id @default(uuid())
-  content         String    @db.Text
-  createdAt       DateTime  @default(now())
+  id              String          @id @default(uuid())
+  content         String          @db.Text
+  createdAt       DateTime        @default(now())
   postId          String
   userId          String
   parentCommentId String?
-  parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id])
-  replies         Comment[] @relation("CommentReplies")
+  parentComment   Comment?        @relation("CommentReplies", fields: [parentCommentId], references: [id])
+  replies         Comment[]       @relation("CommentReplies")
   likes           Like[]
   metrics         CommentMetrics?
-  post            Post      @relation(fields: [postId], references: [id])
-  user            User      @relation(fields: [userId], references: [id])
+  post            Post            @relation(fields: [postId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
 
   @@index([postId, userId])
 }
@@ -224,6 +223,7 @@ model View {
   postId    String
   user      User     @relation(fields: [userId], references: [id])
   post      Post     @relation(fields: [postId], references: [id])
+
   @@unique([userId, postId])
   @@index([userId, postId])
 }
@@ -243,13 +243,15 @@ model Notification {
 }
 
 model Conversation {
-  id        String   @id @default(uuid())
-  user1Id   String
-  user2Id   String
-  createdAt DateTime @default(now())
-
-  user1 User @relation("ConversationUser1", fields: [user1Id], references: [id])
-  user2 User @relation("ConversationUser2", fields: [user2Id], references: [id])
+  id            String    @id @default(uuid())
+  user1Id       String
+  user2Id       String
+  createdAt     DateTime  @default(now())
+   updatedAt     DateTime @updatedAt
+  lastMessage   String?   @db.Text
+  lastMessageAt DateTime?
+  user1         User      @relation("ConversationUser1", fields: [user1Id], references: [id])
+  user2         User      @relation("ConversationUser2", fields: [user2Id], references: [id])
 
   messages Message[]
 
@@ -264,6 +266,7 @@ model ConversationUserStatus {
   conversationId String
   isRead         Boolean      @default(false)
   isDeleted      Boolean      @default(false)
+  isBlocked      Boolean      @default(false)
   user           User         @relation(fields: [userId], references: [id])
   conversation   Conversation @relation(fields: [conversationId], references: [id])
 
@@ -306,7 +309,7 @@ enum LikeType {
 enum NotificationType {
   REPLY
   COMMENT
-  
+
   LIKE_COMMENT
   LIKE
   FOLLOW

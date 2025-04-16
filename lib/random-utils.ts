@@ -58,8 +58,11 @@ export function timeAgoNumber(date: Date) {
   }
   
   export const getUppercaseFirstLetter = (name: string) => {
-    return  name.charAt(0).toUpperCase() + name.slice(1);
-  }
+    return name
+      .split(" ") 
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1)) 
+      .join(" "); 
+  };
   export function formatNumber(num: number): string {
     if (num >= 1_000_000_000) {
       return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'b';
@@ -102,4 +105,11 @@ data: undefined
       }
     }
     return Array.from(uniqueMap.values());
+  }
+ export const createNormalError = (error: string) => {
+    return {
+      error,
+      message: undefined,
+      data: undefined
+    }
   }

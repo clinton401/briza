@@ -1,6 +1,11 @@
 import { FC } from "react";
 import { notable } from "@/lib/fonts";
 import { CompleteProfileForm } from "@/components/auth/complete-profile-form";
+export const metadata = {
+  title: 'Complete Your Profile',
+  description: 'Set up your Briza profile to start sharing and connecting with others on the platform.',
+};
+
 const CompleteProfilePage: FC = () => {
    
   return (

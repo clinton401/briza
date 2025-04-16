@@ -110,7 +110,7 @@ export const UserFollowLayout: FC<{ id: string; children: ReactNode }> = ({
             className="rounded-full items-center justify-center border-none"
             onClick={backHandler}
           >
-            <ArrowLeft className="mr-1" />
+            <ArrowLeft  />
           </Button>
           <span className="flex  gap-1 flex-col">
             <h2 className={`font-bold text-lg ${notable.className}`}>

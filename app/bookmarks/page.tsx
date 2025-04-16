@@ -1,7 +1,12 @@
 import {FC} from "react";
 import {notable} from "@/lib/fonts";
 import getServerUser from "@/hooks/get-server-user"
-import {BookmarkPageUI} from "@/components/bookmarks/bookmark-page-ui"
+import {BookmarkPageUI} from "@/components/bookmarks/bookmark-page-ui";
+export const metadata = {
+    title: 'Bookmarks',
+    description: 'View all the posts you’ve saved to revisit later on Briza.',
+  };
+  
 const BookmarksPage : FC= async()=> {
     const session = await getServerUser();
     if(!session) return;

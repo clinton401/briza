@@ -3,14 +3,19 @@ import { Button } from "@/components/ui/button";
 import { notable } from "@/lib/fonts";
 import { useRouter, usePathname } from "next/navigation";
 
-export const ErrorComp: FC<{ message: string }> = ({ message }) => {
+export const ErrorComp: FC<{ message: string, refetch?: () => void }> = ({ message, refetch }) => {
   const pathname = usePathname();
   const { push } = useRouter();
   const navigationHandler = () => {
     // if (pathname !== "/") {
     //   push("/");
     // } else {
+    if(refetch){
+      refetch()
+    } else {
       window.location.reload();
+    }
+    
    
   };
   return (

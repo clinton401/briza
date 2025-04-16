@@ -3,6 +3,11 @@ import errorImg from "../public/error.gif";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Images } from "@/components/images";
+export const metadata = {
+  title: 'Page Not Found',
+  description: 'The page you are looking for could not be found on Briza. It may have been moved or deleted.',
+};
+
 const NotFound: FC = () => {
   return (
     <main className="w-full min-h-dvh flex flex-col items-center px-[5%]  py-8 justify-center gap-4">

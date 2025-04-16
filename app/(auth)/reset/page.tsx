@@ -1,6 +1,11 @@
 import { FC } from "react";
 import { FormWrapper } from "@/components/auth/form-wrapper";
 import { ResetForm } from "@/components/auth/reset-form";
+export const metadata = {
+  title: 'Reset Your Password',
+  description: 'Securely reset your Briza password and regain access to your account.',
+};
+
 const ResetPasswordPage: FC<{searchParams: {
     redirect?: string
   }}> = async ({searchParams}) => {

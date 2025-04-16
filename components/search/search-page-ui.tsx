@@ -2,7 +2,7 @@
 import { FC, useEffect, useState } from "react";
 import { SearchInput } from "@/components/search/search-input";
 import useInfiniteScroll from "@/hooks/use-infinite-scroll";
-import { PostWithDetails, SessionType } from "@/lib/types";
+import { PostWithDetails, SessionType, NotFollowedUsers } from "@/lib/types";
 import { unknown_error } from "@/lib/variables";
 import { useInView } from "react-intersection-observer";
 import { Loader } from "lucide-react";
@@ -11,15 +11,18 @@ import { Button } from "@/components/ui/button";
 import { PostCard } from "@/components/post/post-card";
 import { removeDuplicates } from "@/lib/random-utils";
 import { useSearchParams, useRouter } from "next/navigation";
+import { NotFollowedCard } from "../home/not-followed-card";
 type FetchPostsResult = {
-  data: PostWithDetails[];
+  data: (PostWithDetails | NotFollowedUsers)[];
   nextPage?: number;
 };
 export const SearchPageUI: FC<{ session: SessionType }> = ({ session }) => {
   const [inputValue, setInputValue] = useState("");
   const [confirmedSearch, setConfirmedSearch] = useState("");
   const router = useRouter();
-  const [filter, setFilter] = useState<"TOP" | "LATEST" | "MEDIA">("TOP");
+  const [filter, setFilter] = useState<"TOP" | "LATEST" | "MEDIA" | "PEOPLE">(
+    "TOP"
+  );
   const searchParams = useSearchParams();
 
   const fetchPosts = async ({
@@ -30,7 +33,9 @@ export const SearchPageUI: FC<{ session: SessionType }> = ({ session }) => {
     signal?: AbortSignal;
   }): Promise<FetchPostsResult> => {
     const response = await fetch(
-      `/api/search?page=${pageParam}&filter=${filter}&query=${encodeURIComponent(confirmedSearch)}`,
+      `/api/search?page=${pageParam}&filter=${filter}&query=${encodeURIComponent(
+        confirmedSearch
+      )}`,
       { signal }
     );
 
@@ -39,10 +44,17 @@ export const SearchPageUI: FC<{ session: SessionType }> = ({ session }) => {
       throw new Error(errorData?.error || unknown_error);
     }
     const data = await response.json();
-    return {
-      data: data.posts,
-      nextPage: data.nextPage,
-    };
+    if (filter === "PEOPLE") {
+      return {
+        data: data.users,
+        nextPage: data.nextPage,
+      };
+    } else {
+      return {
+        data: data.posts,
+        nextPage: data.nextPage,
+      };
+    }
   };
   const {
     data: posts,
@@ -52,7 +64,7 @@ export const SearchPageUI: FC<{ session: SessionType }> = ({ session }) => {
     isLoading,
     error,
     refetch,
-  } = useInfiniteScroll<PostWithDetails, FetchPostsResult>(
+  } = useInfiniteScroll<PostWithDetails | NotFollowedUsers, FetchPostsResult>(
     ({ pageParam = 1, signal }) => fetchPosts({ pageParam, signal }),
     ["search", confirmedSearch.toLowerCase(), filter.toLowerCase()],
     {
@@ -67,8 +79,6 @@ export const SearchPageUI: FC<{ session: SessionType }> = ({ session }) => {
       setInputValue(query.trim());
     }
   }, [query]);
-  
-  console.log({query, inputValue, confirmedSearch})
 
   useEffect(() => {
     if (confirmedSearch) {
@@ -98,7 +108,7 @@ export const SearchPageUI: FC<{ session: SessionType }> = ({ session }) => {
     error,
   ]);
   const uniquePosts = removeDuplicates(posts);
-  console.log(uniquePosts);
+  console.log({ uniquePosts, filter });
   return (
     <div className="w-full pb-16 md:pb-8 min-h-dvh ">
       <SearchInput
@@ -126,7 +136,7 @@ export const SearchPageUI: FC<{ session: SessionType }> = ({ session }) => {
             </section>
           )}
           {!isLoading && (error || !uniquePosts) && (
-            <section className="w-full flex items-center flex-col pt-4  px-p-half gap-4">
+            <section className="w-full flex items-center flex-col pt-6  px-p-half gap-4">
               <h2
                 className={`${notable.className} w-full text-center font-bold`}
               >
@@ -139,9 +149,11 @@ export const SearchPageUI: FC<{ session: SessionType }> = ({ session }) => {
             <>
               {uniquePosts.length > 0 && (
                 <>
-                  
-                      {uniquePosts.map((post: PostWithDetails) => {
-                        if (!post || (filter === "MEDIA" && !post.media)) return;
+                  {filter !== "PEOPLE" && (
+                    <>
+                      {(uniquePosts as PostWithDetails[]).map((post) => {
+                        if (!post || (filter === "MEDIA" && !post.media))
+                          return;
 
                         return (
                           <PostCard
@@ -154,6 +166,25 @@ export const SearchPageUI: FC<{ session: SessionType }> = ({ session }) => {
                           />
                         );
                       })}
+                    </>
+                  )}
+
+                  {filter === "PEOPLE" && (
+                    <section className="flex flex-col px-p-half gap-4 py-4 w-full overflow-hidden items-center">
+                      {(uniquePosts as NotFollowedUsers[]).map((user) => {
+                        if (!user.profilePictureUrl) return;
+                        return (
+                          <NotFollowedCard
+                            key={user.id}
+                            user={user}
+                            bioNeeded
+                            userId={session.id}
+                            searchQuery={confirmedSearch}
+                          />
+                        );
+                      })}
+                    </section>
+                  )}
                   {isFetchingNextPage && (
                     <section className="w-full  overflow-hidden flex items-center justify-center px-p-half py-8 ">
                       <Loader className="h-4 w-4 animate-spin" />
@@ -163,10 +194,10 @@ export const SearchPageUI: FC<{ session: SessionType }> = ({ session }) => {
                 </>
               )}
               {uniquePosts.length < 1 && (
-                <div className="flex items-center py-4 px-p-half justify-center">
+                <div className="flex items-center py-6 px-p-half justify-center">
                   <p className="text-sm text-center">
                     {" "}
-                    No {filter === "MEDIA" ? "media" : "posts"} available
+                    No {filter === "PEOPLE" ? "user" : "posts"} available
                   </p>
                 </div>
               )}

@@ -1,6 +1,6 @@
 "use client";
 import { FC, useState, useEffect } from "react";
-import type { SessionType, PostWithDetails } from "@/lib/types";
+import type { SessionType, PostWithDetails, CommentWithUserAndFollowers } from "@/lib/types";
 import { PostCard } from "@/components/post/post-card";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -95,6 +95,7 @@ export const PostPageUI: FC<PostPageUiProps> = ({ session, postId }) => {
     data: post,
     error,
     isLoading,
+    refetch
   } = fetchData<PostWithDetails, PostQueryKey>(["post", postId], fetchPost, {
     enabled: !!postId,
   });
@@ -174,38 +175,46 @@ export const PostPageUI: FC<PostPageUiProps> = ({ session, postId }) => {
             data.old?.id
           ) {
             const updateId = data.old.id;
-            queryClient.setQueryData(["comments"], (oldData: any) => {
-              if (!oldData) return oldData;
+            queryClient.setQueryData(
+              ["comments"],
+              (
+                oldData: {
+                  pageParams: number[];
+                  pages: { data: CommentWithUserAndFollowers[] }[];
+                } | null
+              ) => {
+                if (!oldData) return oldData;
 
-              return {
-                ...oldData,
-                pages: oldData.pages.map((page: any) => ({
-                  ...page,
-                  data: page.data.map((comment: any) => {
-                    if (comment.id === updateId) {
-                      const oldMetrics = comment.metrics || {
-                        id: updateId,
-                        likesCount: 0,
-                        repliesCount: 0,
-                      };
+                return {
+                  ...oldData,
+                  pages: oldData.pages.map((page) => ({
+                    ...page,
+                    data: page.data.map((comment) => {
+                      if (comment.id === updateId) {
+                        const oldMetrics = comment.metrics || {
+                          id: updateId,
+                          likesCount: 0,
+                          repliesCount: 0,
+                        };
 
-                      const newData = data.new as NewCommentMetrics;
-                      const updatedMetrics = {
-                        ...oldMetrics,
-                        repliesCount:
-                          newData?.repliesCount ?? oldMetrics.repliesCount,
-                        likesCount:
-                          newData?.likesCount ?? oldMetrics.likesCount,
-                      };
+                        const newData = data.new as NewCommentMetrics;
+                        const updatedMetrics = {
+                          ...oldMetrics,
+                          repliesCount:
+                            newData?.repliesCount ?? oldMetrics.repliesCount,
+                          likesCount:
+                            newData?.likesCount ?? oldMetrics.likesCount,
+                        };
 
-                      return { ...comment, metrics: updatedMetrics };
-                    }
+                        return { ...comment, metrics: updatedMetrics };
+                      }
 
-                    return comment;
-                  }),
-                })),
-              };
-            });
+                      return comment;
+                    }),
+                  })),
+                };
+              }
+            );
           }
         }
       );
@@ -228,7 +237,7 @@ export const PostPageUI: FC<PostPageUiProps> = ({ session, postId }) => {
   }
   if (error || !post) {
     const errorMessage = error?.message || unknown_error;
-    return <ErrorComp message={errorMessage} />;
+    return <ErrorComp message={errorMessage} refetch={refetch}/>;
   }
   const backHandler = () => {
     if (window.history.length > 1) {
@@ -281,7 +290,7 @@ export const PostPageUI: FC<PostPageUiProps> = ({ session, postId }) => {
             className="rounded-full items-center justify-center border-none"
             onClick={backHandler}
           >
-            <ArrowLeft className="mr-1" />
+            <ArrowLeft className="" />
           </Button>
           <h2 className={`font-bold text-lg ${notable.className}`}>Post</h2>
         </div>

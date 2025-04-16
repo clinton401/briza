@@ -1,8 +1,8 @@
 import { Dispatch, FC, SetStateAction, useState, useRef } from "react";
 import { Input } from "../ui/input";
-import { Search, ArrowLeft, X, Loader, User2 } from "lucide-react";
+import { Search, ArrowLeft, X, Loader, User2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useDebounce } from "use-debounce";
 import fetchData from "@/hooks/fetch-data";
@@ -10,6 +10,7 @@ import { unknown_error } from "@/lib/variables";
 import { InputSearchUser } from "@/lib/types";
 import { QueryFunctionContext } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getUppercaseFirstLetter } from "@/lib/random-utils";
 
 const appearAnimation = {
   hidden: {
@@ -32,15 +33,15 @@ export const SearchInput: FC<{
   inputValue: string;
   setInputValue: Dispatch<SetStateAction<string>>;
   setConfirmedSearch: Dispatch<SetStateAction<string>>;
-  setFilter: Dispatch<SetStateAction<"TOP" | "LATEST" | "MEDIA">>;
-  filter: "TOP" | "LATEST" | "MEDIA"
+  setFilter: Dispatch<SetStateAction<"TOP" | "LATEST" | "MEDIA" | "PEOPLE">>;
+  filter: "TOP" | "LATEST" | "MEDIA" | "PEOPLE";
 }> = ({ inputValue, setInputValue, setConfirmedSearch, filter, setFilter }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const [debouncedSearch] = useDebounce(inputValue, 500);
   const openModal = debouncedSearch.length > 0 && isFocused;
   const { push, back } = useRouter();
-  const inputRef = useRef<HTMLInputElement | null >(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const fetchUsers = async ({
     signal,
@@ -76,14 +77,14 @@ export const SearchInput: FC<{
 
   const handleSearch = () => {
     if (inputValue.trim().length > 0) {
-      setConfirmedSearch(inputValue); 
+      setConfirmedSearch(inputValue);
       inputRef.current?.blur();
     }
-  }
-   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  };
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearch();
-    }else if (e.key === "Escape") {
+    } else if (e.key === "Escape") {
       inputRef.current?.blur();
     }
   };
@@ -96,7 +97,7 @@ export const SearchInput: FC<{
           className="rounded-full items-center  flex  justify-center  border-none"
           onClick={backHandler}
         >
-          <ArrowLeft className="mr-1" />
+          <ArrowLeft className="" />
         </Button>
 
         <div className=" grow min-w-[300px]  relative ">
@@ -107,27 +108,27 @@ export const SearchInput: FC<{
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             ref={inputRef}
-            onKeyDown ={handleKeyPress}
+            onKeyDown={handleKeyPress}
             className="w-full pl-[40px] pr-[50px] placeholder:italic italic rounded-full"
           />
 
           <Search className="absolute left-3 h-4 w-4  top-1/2 translate-y-[-50%]  text-gray-300 " />
           {openModal && (
- <Button
- variant="outline"
- size="icon"
- className="absolute right-0 h-full aspect-square top-1/2 translate-y-[-50%] rounded-tr-full rounded-br-full  text-gray-300 "
- onClick={() => {
-  if(inputValue.length > 0){
-    setInputValue("")
-  }
-  inputRef.current?.focus()
- }}
->
- <X className="h-4 w-4" />
-</Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute right-0 h-full aspect-square top-1/2 translate-y-[-50%] rounded-tr-full rounded-br-full  text-gray-300 "
+              onClick={() => {
+                if (inputValue.length > 0) {
+                  setInputValue("");
+                }
+                inputRef.current?.focus();
+              }}
+            >
+              <X className="h-4 w-4" />
+            </Button>
           )}
-         
+
           <AnimatePresence>
             {openModal && (
               <motion.div
@@ -150,7 +151,11 @@ export const SearchInput: FC<{
                 )} */}
                 {!isLoading && debouncedSearch.length > 0 && (
                   // <div className=" w-full border border-red-900">
-                  <Button className="w-full py-6  rounded-none truncate " variant="ghost" onClick={handleSearch}>
+                  <Button
+                    className="w-full py-6  rounded-none truncate "
+                    variant="ghost"
+                    onClick={handleSearch}
+                  >
                     Search for "{debouncedSearch}"
                   </Button>
                   // </div>
@@ -159,7 +164,7 @@ export const SearchInput: FC<{
                 {!isLoading && !error && users && users.length > 0 && (
                   <>
                     <div className="w-full flex flex-col gap-1">
-                      {users.map((user) => {
+                      {users.slice(0,5).map((user) => {
                         return (
                           <Button
                             key={user.username}
@@ -180,12 +185,17 @@ export const SearchInput: FC<{
                               </AvatarFallback>
                             </Avatar>
                             <div className=" flex grow items-start flex-col overflow-hidden  justify-center gap-1">
-                              <span className="truncate text-left  w-full">
-                                {user.name}
-                              </span>
-                              <span className="text-muted-foreground  truncate text-left w-full">
+                              <p className="truncate text-left  flex items-center  w-full">
+                                {getUppercaseFirstLetter(user.name)}
+                                {user.blueCheckVerified && (
+                                  <span className="h-4 ml-1 aspect-square rounded-full bg-[#1DA1F2] flex items-center justify-center text-white">
+                                    <Check className="h-1 w-1" />
+                                  </span>
+                                )}
+                              </p>
+                              <p className="text-muted-foreground  truncate text-left w-full">
                                 @{user.username}
-                              </span>
+                              </p>
                             </div>
                           </Button>
                         );
@@ -218,6 +228,16 @@ export const SearchInput: FC<{
           className={`${filter === "LATEST" ? "bg-secondary" : ""}`}
         >
           Latest
+        </Button>
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={() => {
+            setFilter("PEOPLE");
+          }}
+          className={`${filter === "PEOPLE" ? "bg-secondary" : ""}`}
+        >
+          People
         </Button>
         <Button
           variant="outline"
