@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import {Prisma} from "@prisma/client"
 import getServerUser from "@/hooks/get-server-user";
 import { unknown_error, unauthorized_error } from "@/lib/variables";
 
@@ -25,7 +26,7 @@ export async function GET(req: NextRequest) {
     const userId = session.id;
 
     try {
-        const whereCondition: {} = {
+        const whereCondition: Prisma.UserWhereInput  = {
             AND: [
                 {
                     OR: [
@@ -40,7 +41,7 @@ export async function GET(req: NextRequest) {
         };
 
         if (filter === "conversation") {
-            (whereCondition as {AND: [{id: {}}]}).AND.push({ id: { not: userId } });
+            (whereCondition.AND as Prisma.UserWhereInput[])?.push({ id: { not: userId } });
         }
         const users = await prisma.user.findMany({
             where: whereCondition,

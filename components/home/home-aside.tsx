@@ -79,7 +79,7 @@ export const HomeAside: FC<{session: SessionType}> = ({session}) => {
               </h3>
 
               <Button
-                onClick={(e: React.MouseEvent<HTMLButtonElement>) => refetch()}
+                onClick={() => refetch()}
               >
                 Retry
               </Button>

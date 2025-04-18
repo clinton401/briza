@@ -18,9 +18,9 @@ import { createPost } from "@/actions/create-post";
 import { unknown_error } from "@/lib/variables";
 import handleTextAreaHeight from "@/hooks/handle-text-area-height";
 import { useQueryClient } from '@tanstack/react-query';
-type EmojiData = {
-  emoji: string;
-};
+// type EmojiData = {
+//   emoji: string;
+// };
 export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, closeHandler?: () => void }> = ({ session, borderNeeded = true, closeHandler }) => {
   const [content, setContent] = useState("");
   const [isPostPending, setIsPostPending] = useState(false);
@@ -249,7 +249,7 @@ export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, cl
       };
 
       videoElement.onerror = (error) => {
-        console.error(`Unable to load video duration`)
+        console.error(`Unable to load video duration: ${error}`)
         reject(new Error("Failed to load video duration"));
       };
     });

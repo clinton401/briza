@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import getServerUser from "@/hooks/get-server-user";
 import { unauthorized_error, unknown_error } from "@/lib/variables";
 import { calculatePagination, calculateNextPage } from "@/lib/random-utils";
+import {Prisma} from "@prisma/client"
 
 export async function GET(req: Request) {
   try {
@@ -99,11 +100,11 @@ export async function GET(req: Request) {
       });
     }
 
-    const whereCondition: {} = {
+    const whereCondition: Prisma.PostWhereInput = {
       content: { contains: query, mode: "insensitive" },
     };
 
-    let orderByCondition: {}[] = [{ createdAt: "desc" }];
+    let orderByCondition: Prisma.Enumerable<Prisma.PostOrderByWithRelationInput> = [{ createdAt: "desc" }];
     if (filter === "top") {
       orderByCondition = [
         { metrics: { likesCount: "desc" } },
