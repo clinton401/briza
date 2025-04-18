@@ -154,7 +154,7 @@ export async function GET(req: Request) {
     };
 
     if (filter === "media") {
-      (whereCondition as {media : {}}).media = { some: {} };
+      whereCondition.media = { some: {} };
     }
 
     // **Fetch Posts**
