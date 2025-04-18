@@ -7,7 +7,7 @@ import {
   NotificationType,
   NotificationWithTriggeredBy,
   SessionType,
-  PostWithDetails
+  
 } from "@/lib/types";
 import { unknown_error } from "@/lib/variables";
 import { useQueryClient } from "@tanstack/react-query";
@@ -34,7 +34,7 @@ export type NotificationEvent = {
   table: string;
   commit_timestamp: string;
   eventType: "INSERT" | "UPDATE" | "DELETE";
-  new: NewNotificationEvent | {};
+  new: NewNotificationEvent | null;
   old: Record<string, string> | null;
   errors: string | null;
 };
@@ -61,7 +61,7 @@ const fetchNotifications = async ({
 };
 
 export const NotificationPageUI: FC<{ session: SessionType }> = ({
-  session,
+
 }) => {
   const {
     data,
@@ -69,7 +69,6 @@ export const NotificationPageUI: FC<{ session: SessionType }> = ({
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-    isFetching,
     error,
     refetch,
   } = useInfiniteScroll<NotificationWithTriggeredBy, FetchNotificationsResult>(
@@ -155,7 +154,7 @@ export const NotificationPageUI: FC<{ session: SessionType }> = ({
             No notifications
           </h2>
           <p className="text-gray-5 text-center max-w-sm">
-            When you have notifications, they'll show up here. Stay tuned for
+            When you have notifications, they&apos;ll show up here. Stay tuned for
             updates!
           </p>
         </section>

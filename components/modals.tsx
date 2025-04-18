@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 
 type ModalsProps = {
   isOpen: boolean;
-  closeModal: (e?: any) => void;
+  closeModal: (e?:  React.MouseEvent<HTMLDivElement>) => void;
   showCloseButton?: boolean;
   children: ReactNode;
 };

@@ -37,7 +37,8 @@ try{
       ? `${post.content.slice(0, 120)}${post.content.length > 120 ? '...' : ''}`
       : 'This post does not have any content.',
   };
-}catch(error){
+} catch (error) {
+  console.error(`Unable to get post details for metadata : ${error} `)
   return {
     title: 'Post',
     description: 'An error occurred while trying to fetch the post. Please try again later.',

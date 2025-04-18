@@ -6,7 +6,7 @@ import { notable } from "@/lib/fonts";
 import { ArrowLeft, Loader } from "lucide-react";
 import useInfiniteScroll from "@/hooks/use-infinite-scroll";
 import { unknown_error } from "@/lib/variables";
-import { type NotFollowedUsers, SessionType } from "@/lib/types";
+import { type NotFollowedUsers } from "@/lib/types";
 import { useInView } from "react-intersection-observer";
 import { removeDuplicates } from "@/lib/random-utils";
 

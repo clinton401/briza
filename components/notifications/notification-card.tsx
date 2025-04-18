@@ -1,12 +1,6 @@
 import { FC } from "react";
 import {
-  Bell,
-  Heart,
-  MessageCircle,
   UserPlus,
-  Star,
-  Check,
-  Inbox,
   User2,
 } from "lucide-react";
 import { motion } from "motion/react";

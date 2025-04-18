@@ -15,7 +15,7 @@ export async function GET() {
         return NextResponse.json(data
         );
     } catch (error) {
-        console.error(`Error in GET /notifications/unread route`);
+        console.error(`Error in GET /notifications/unread route: ${error}`);
         return NextResponse.json({
             error: unknown_error
         }, {

@@ -35,9 +35,6 @@ import createToast from "@/hooks/create-toast";
 
 export function PasswordSettings() {
   const [isLoading, setIsLoading] = useState(false)
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
-  const [showNewPassword, setShowNewPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const { createSimple, createError } = createToast();
 
@@ -102,7 +99,7 @@ form.reset();
                       <Input
                       disabled={isLoading}
                         placeholder="Enter your current password"
-                        type={showCurrentPassword ? "text" : "password"}
+                        type={ "password"}
                         {...field}
                       />
                     </FormControl>
@@ -134,7 +131,7 @@ form.reset();
                       <Input
                       disabled={isLoading}
                         placeholder="Enter your new password"
-                        type={showNewPassword ? "text" : "password"}
+                        type={ "password"}
                         {...field}
                       />
                     </FormControl>
@@ -166,7 +163,7 @@ form.reset();
                       <Input
                       disabled={isLoading}
                         placeholder="Confirm your new password"
-                        type={showConfirmPassword ? "text" : "password"}
+                        type={ "password"}
                         {...field}
                       />
                     </FormControl>

@@ -128,7 +128,7 @@ Search for a user by name, click on their profile to start a conversation.
             <div className="w-full flex items-center flex-col justify-center gap-4 p-4">
               <p className="text-center w-full  text-sm">{error?.message}</p>
               <Button
-                onClick={(e: React.MouseEvent<HTMLButtonElement>) => refetch()}
+                onClick={() => refetch()}
               >
                 Retry
               </Button>

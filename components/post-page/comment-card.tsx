@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, Dispatch, SetStateAction } from "react";
+import { FC, useState} from "react";
 import {
   type CommentWithUserAndFollowers,
   SessionType,
@@ -58,7 +58,7 @@ export const CommentCard: FC<CommentCardProps> = ({
 
 const parentCommentId = comment.id;
 const fetchReplies = async ({
-  queryKey,
+  // queryKey,
   signal,
 }: QueryFunctionContext<ReplyQueryKey>): Promise<
   CommentWithUserAndFollowers[]
@@ -83,6 +83,8 @@ const fetchReplies = async ({
     { enabled: false }
   );
 
+
+  const queryClient = useQueryClient();
   const { textareaRef, handleInput } = handleTextAreaHeight();
   const { isOpen, setIsOpen } = useCloseOnEscKey();
 const {mutate: toggleLike} = useToggleCommentLike();
@@ -104,8 +106,6 @@ const {mutate: toggleLike} = useToggleCommentLike();
     metrics.repliesCount === null
   )
     return null;
-
-  const queryClient = useQueryClient();
   const uppercase_name = getUppercaseFirstLetter(comment_owner_name);
   const uppercase_username = getUppercaseFirstLetter(comment_owner_username);
   const joined_date = new Date(comment_owner_account_created_at);
@@ -115,7 +115,7 @@ const {mutate: toggleLike} = useToggleCommentLike();
   const { monthText: commentMonthText, dayOfMonth: commentDay } =
     dateHandler(createdAt);
 
-  const { createSimple, createError } = createToast();
+  const { createError } = createToast();
 
   const likeOrUnlike = async () => {
     toggleLike(
@@ -134,7 +134,7 @@ const {mutate: toggleLike} = useToggleCommentLike();
     );
   };
   const viewReply = async () => {
-    const isShown = showReply;
+    // const isShown = showReply;
     setShowReply(!showReply);
     // if (
     //   !isShown &&
@@ -370,7 +370,7 @@ const {mutate: toggleLike} = useToggleCommentLike();
               {error?.message || unknown_error}
             </h2>
             <Button
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+              onClick={() =>
                 refetch()
               }
             >

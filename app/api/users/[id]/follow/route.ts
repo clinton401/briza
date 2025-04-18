@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { followOrUnfollowUser } from "@/actions/follow-or-unfollow-user";
 import {prisma} from "@/lib/db";
-import { Prisma } from "@prisma/client";
 import { unauthorized_error, unknown_error } from "@/lib/variables";
 import getServerUser from "@/hooks/get-server-user";
 import { calculatePagination, calculateNextPage } from "@/lib/random-utils";
-import {type NotFollowedUsers} from "@/lib/types";
 
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string } >}) {

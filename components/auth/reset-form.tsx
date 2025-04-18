@@ -27,7 +27,7 @@ export const ResetForm: FC = () => {
   const [isPending, setIsPending] = useState(false);
   const [isNewEmailPending, setIsNewEmailPending] = useState(false);
   const [isCodeSent, setIsCodeSent] = useState(false);
-  const { error, setError, success, setSuccess, isTyping, setIsTyping } =
+  const { error, setError, success, setSuccess, setIsTyping } =
     useIsTyping();
     const {
       isNewClicked: isResendClicked,

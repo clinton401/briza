@@ -16,8 +16,9 @@ export const MobileNavbar: FC<{
   error: Error | null;
   notificationsCount: number | undefined;
 }> = ({ session, isLoading, error, notificationsCount }) => {
-  if (!session) return;
+  
   const pathname = usePathname();
+  if (!session) return;
 
   const links = [
     {

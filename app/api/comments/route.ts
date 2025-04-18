@@ -22,7 +22,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const result = await getComments(postId, Number(page), filter as any);
+    const result = await getComments(postId, Number(page), filter);
 
     const { error, success, data } = result;
 

@@ -1,5 +1,5 @@
 import {
-  FC,
+
   Dispatch,
   SetStateAction,
   ReactNode,
@@ -12,8 +12,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import EmojiPicker from "emoji-picker-react";
 
 type EmojiSelectorProps = {

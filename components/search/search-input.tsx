@@ -156,7 +156,7 @@ export const SearchInput: FC<{
                     variant="ghost"
                     onClick={handleSearch}
                   >
-                    Search for "{debouncedSearch}"
+                    Search for &quot;{debouncedSearch}&quot;
                   </Button>
                   // </div>
                 )}

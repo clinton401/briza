@@ -1,8 +1,6 @@
 "use client"
 import {FC, useEffect, Fragment} from "react"
 import {
-    NotificationType,
-    PostWithDetails,
     SessionType,
     BookmarksType
   } from "@/lib/types";
@@ -90,7 +88,7 @@ const fetchBookmarks = async ({
                 No bookmarks
               </h2>
               <p className="text-gray-5 text-center max-w-sm">
-                When you have bookmarks, they'll show up here. Stay tuned for
+                When you have bookmarks, they&apos;ll show up here. Stay tuned for
                 updates!
               </p>
             </section>

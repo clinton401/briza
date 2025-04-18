@@ -87,7 +87,7 @@ export const UserPagePosts: FC<{
     <section className=" w-full flex flex-col ">
       {uniquePosts.length > 0 && (
         <>
-          {uniquePosts.map((post: PostWithDetails, index) => {
+          {uniquePosts.map((post: PostWithDetails) => {
             if (!post) return;
             return (
               <PostCard

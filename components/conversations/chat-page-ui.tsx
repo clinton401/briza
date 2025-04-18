@@ -65,7 +65,7 @@ export const ChatPageUI: FC<{ id: string; session: SessionType }> = ({
   const [newMessage, setNewMessage] = useState("");
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
-const [preserveScroll, setPreserveScroll] = useState(false);
+// const [preserveScroll, setPreserveScroll] = useState(false);
 // const [prevScrollHeight, setPrevScrollHeight] = useState(0);
 const [shouldPreserveScroll, setShouldPreserveScroll] = useState(false);
 

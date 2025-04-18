@@ -47,14 +47,14 @@ export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, cl
   //   textareaRef.current.style.height = "auto";
   //   textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
   // };
-  const handleEmojiClick = (emojiData: EmojiData) => {
-    if (!textareaRef || !textareaRef?.current) return null;
-    const { emoji } = emojiData;
-    const cursorPosition = textareaRef.current.selectionStart;
-    const textBeforeCursor = content.substring(0, cursorPosition);
-    const textAfterCursor = content.substring(cursorPosition);
-    setContent(`${textBeforeCursor}${emoji}${textAfterCursor}`);
-  };
+  // const handleEmojiClick = (emojiData: EmojiData) => {
+  //   if (!textareaRef || !textareaRef?.current) return null;
+  //   const { emoji } = emojiData;
+  //   const cursorPosition = textareaRef.current.selectionStart;
+  //   const textBeforeCursor = content.substring(0, cursorPosition);
+  //   const textAfterCursor = content.substring(cursorPosition);
+  //   setContent(`${textBeforeCursor}${emoji}${textAfterCursor}`);
+  // };
 
   const uploadToCloudinary = async (
     image: File,
@@ -249,6 +249,7 @@ export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, cl
       };
 
       videoElement.onerror = (error) => {
+        console.error(`Unable to load video duration`)
         reject(new Error("Failed to load video duration"));
       };
     });

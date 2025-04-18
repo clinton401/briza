@@ -1,4 +1,4 @@
-import { FC, Dispatch, SetStateAction, forwardRef, memo } from "react";
+import {  Dispatch, SetStateAction, forwardRef, memo } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { type SessionType } from "@/lib/types";

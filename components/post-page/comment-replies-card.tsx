@@ -1,4 +1,4 @@
-import {FC, useState} from "react";
+import {FC} from "react";
 import { type CommentWithUserAndFollowers } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {

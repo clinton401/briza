@@ -1,6 +1,4 @@
-import { FC, Dispatch, SetStateAction, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { FC, Dispatch, SetStateAction } from "react";
 import { PostMetrics } from "@/components/post/post-metrics";
 import type { ImageModal, PostMetricsTypes } from "@/lib/types";
 import {

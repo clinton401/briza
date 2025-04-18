@@ -9,7 +9,7 @@ import fetchData from "@/hooks/fetch-data";
 import PostLoadingPage from "@/app/status/[id]/loading";
 import { ErrorComp } from "@/components/error-comp";
 import { unknown_error } from "@/lib/variables";
-import { useQueryClient, QueryFunctionContext } from "@tanstack/react-query";
+import {  QueryFunctionContext } from "@tanstack/react-query";
 import { formatNumber, dateHandler } from "@/lib/random-utils";
 import {
     Avatar,
@@ -41,10 +41,10 @@ export const UserPageUI: FC<UserPageUIProps> = ({ session, id }) => {
    
 
     const { isOpen: openModal, setIsOpen: setOpenModal } = useCloseOnEscKey();
-    const { isOpen: openEditModal, setIsOpen: setOpenEditModal } = useCloseOnEscKey();
+    // const { isOpen: openEditModal, setIsOpen: setOpenEditModal } = useCloseOnEscKey();
     
   const fetchUser = async ({
-    queryKey,
+    // queryKey,
     signal,
   }: QueryFunctionContext<UserQueryKey>): Promise<UserResponse> => {
     const response = await fetch(`/api/users/${id}`, { signal });

@@ -2,7 +2,7 @@ import { FC } from "react";
 import { ConversationType } from "@/lib/types";
 import { Button } from "../ui/button";
 import { useRouter, useParams } from "next/navigation";
-import { Dot, User2, Check } from "lucide-react";
+import {  User2, Check } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   dateHandler,

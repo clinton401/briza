@@ -11,7 +11,7 @@ import { checkUsernameUnique } from "@/actions/check-username-unique";
 import { Cross2Icon, CheckIcon } from "@radix-ui/react-icons";
 // import { DotLoader } from "@/components/dot-loader";
 import { useDebouncedCallback } from "use-debounce";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { UserResponse } from "@/lib/types";
@@ -56,7 +56,7 @@ export const UserEditProfileForm: FC<{
   const profilePicRef = useRef<HTMLInputElement | null>(null);
   const coverPicRef = useRef<HTMLInputElement | null>(null);
   const sheetCloseRef = useRef<HTMLButtonElement | null>(null);
-  const { push } = useRouter();
+  // const { push } = useRouter();
   const { profileUrl, coverUrl, coverId, profileId } = uploadedDetails;
   const { usernameError, bioError, websiteError } = formErrors;
   const { username, bio, website, websiteName } = formDetails;

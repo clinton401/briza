@@ -36,12 +36,12 @@ type PostMetricsRealTime = {
   table: string;
   commit_timestamp: string;
   eventType: string;
-  new: NewMetrics | {};
+  new: NewMetrics | null;
   old:
     | {
         id: string;
       }
-    | {};
+    | null;
   errors: null | string[];
 };
 type NewCommentMetrics = {
@@ -54,12 +54,12 @@ type CommentMetricsRealTime = {
   table: string;
   commit_timestamp: string;
   eventType: string;
-  new: NewCommentMetrics | {};
+  new: NewCommentMetrics | null;
   old:
     | {
         id: string;
       }
-    | {};
+    | null;
   errors: null | string[];
 };
 type NewMetrics = {
@@ -135,12 +135,14 @@ export const PostPageUI: FC<PostPageUiProps> = ({ session, postId }) => {
         { event: "UPDATE", schema: "public", table: "PostMetrics" },
         (payload) => {
           const data = payload as PostMetricsRealTime;
-          const isOldAvailable = hasAtLeastOneProperty(data.old);
-          const isNewAvailable = hasAtLeastOneProperty(data.new);
+          const isOldAvailable = data?.old && hasAtLeastOneProperty(data?.old);
+          const isNewAvailable = data?.new && hasAtLeastOneProperty(data.new);
           if (data.errors) return;
           if (
             isOldAvailable &&
             isNewAvailable &&
+            data?.old &&
+            data?.new &&
             "id" in data.old &&
             data.old.id === post.metrics?.id
           ) {
@@ -149,7 +151,7 @@ export const PostPageUI: FC<PostPageUiProps> = ({ session, postId }) => {
               (oldPost: undefined | PostWithDetails) => {
                 if (!oldPost) return oldPost;
 
-                const updatedMetrics = hasAtLeastOneProperty(data.new)
+                const updatedMetrics = data?.new && hasAtLeastOneProperty(data.new)
                   ? { ...data.new }
                   : oldPost.metrics;
 
@@ -164,17 +166,19 @@ export const PostPageUI: FC<PostPageUiProps> = ({ session, postId }) => {
         { event: "UPDATE", schema: "public", table: "CommentMetrics" },
         (payload) => {
           const data = payload as CommentMetricsRealTime;
-          const isOldAvailable = hasAtLeastOneProperty(data.old);
-          const isNewAvailable = hasAtLeastOneProperty(data.new);
-          if (data.errors) return;
+          const { old, errors, new: newData } = data;
+          const isOldAvailable = old && hasAtLeastOneProperty(old);
+          const isNewAvailable = newData && hasAtLeastOneProperty(newData);
+          if (errors) return;
 
           if (
             isOldAvailable &&
             isNewAvailable &&
-            "id" in data.old &&
-            data.old?.id
+            newData && old &&
+            "id" in old &&
+            old?.id
           ) {
-            const updateId = data.old.id;
+            const updateId = old.id;
             queryClient.setQueryData(
               ["comments"],
               (

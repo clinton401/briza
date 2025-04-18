@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     const userId = session.id;
 
     try {
-        let whereCondition: any = {
+        const whereCondition: {} = {
             AND: [
                 {
                     OR: [
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
         };
 
         if (filter === "conversation") {
-            whereCondition.AND.push({ id: { not: userId } });
+            (whereCondition as {AND: [{id: {}}]}).AND.push({ id: { not: userId } });
         }
         const users = await prisma.user.findMany({
             where: whereCondition,

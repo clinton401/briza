@@ -3,7 +3,6 @@ import { FC, ReactNode, useEffect } from "react";
 import { SessionType, ConversationType } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
-import { hasAtLeastOneProperty } from "@/lib/random-utils";
 
 export type Message = {
   id: string;
@@ -41,8 +40,8 @@ export type SupabaseRealtimeEvent<T> = {
   table: string;
   commit_timestamp: string;
   eventType: "INSERT" | "UPDATE" | "DELETE";
-  new: T | {};
-  old: { id: string } | {};
+  new: T | null;
+  old: { id: string } | null;
   errors: string | null;
 };
 
@@ -145,7 +144,8 @@ export const ConversationSocketUpdate: FC<{
 
           if (data.errors) return;
           if ("id" in newMessage ) {
-            const { isDeleted, ...cleanedMessage } = newMessage;
+          const cleanedMessage = { ...newMessage };
+delete cleanedMessage.isDeleted;
 
             await queryClient.invalidateQueries(
                 {

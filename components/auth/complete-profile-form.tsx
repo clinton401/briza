@@ -13,7 +13,6 @@ import { Cross2Icon, CheckIcon } from "@radix-ui/react-icons";
 import { useDebouncedCallback } from "use-debounce";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { MiniLoader } from "@/components/mini-loader";
 import useGetRedirectUrl from "@/hooks/use-get-redirect-url";
 import { completeProfileDetails } from "@/actions/complete-profile-details";
 import {Loader} from "lucide-react"

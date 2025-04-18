@@ -2,9 +2,7 @@ import { FC } from "react";
 import { Videos } from "@/components/videos";
 import { Images } from "@/components/images";
 import useCloseOnEscKey from "@/hooks/use-close-on-esc-key";
-import type { PostWithDetails } from "@/lib/types";
 
-import { MediaDialog } from "@/components/media-dialog";
 type MediaCardType = {
   metrics: {
     id: string;
@@ -25,7 +23,7 @@ type MediaCardType = {
    searchFilter?: "TOP" | "LATEST" | "MEDIA",
 };
 
-export const MediaCard: FC<MediaCardType> = ({ media, metrics, searchQuery, searchFilter }) => {
+export const MediaCard: FC<MediaCardType> = ({ media }) => {
     const { isOpen: openModal, setIsOpen: setOpenModal } = useCloseOnEscKey();
     const modalHandler = (e?: React.MouseEvent<HTMLDivElement>) => {
         if (!e) return;
@@ -36,7 +34,7 @@ export const MediaCard: FC<MediaCardType> = ({ media, metrics, searchQuery, sear
         }
         setOpenModal(!openModal);
       };
-      const modalLinks = media.mediaType === "VIDEO" ? null : [{url: media.mediaUrl, id: media.id}];
+      // const modalLinks = media.mediaType === "VIDEO" ? null : [{url: media.mediaUrl, id: media.id}];
   return (
     <>
       {media.mediaType === "VIDEO" ? (

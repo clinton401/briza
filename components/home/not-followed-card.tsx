@@ -16,6 +16,11 @@ export const NotFollowedCard: FC<{
   userId: string;
   searchQuery?: string
 }> = ({ user, bioNeeded = false, filter, followId, userId, searchQuery }) => {
+  
+  const { push } = useRouter();
+  const pathname = usePathname();
+  const { id: postId } = useParams();
+  const { mutate: toggleFollow } = useToggleFollow();
   const {
     id,
     username,
@@ -37,10 +42,6 @@ export const NotFollowedCard: FC<{
     !createdAt
   )
     return null;
-  const { push } = useRouter();
-  const pathname = usePathname();
-  const { id: postId } = useParams();
-  const { mutate: toggleFollow } = useToggleFollow();
   const uppercase_name = getUppercaseFirstLetter(name);
   // const uppercase_username = getUppercaseFirstLetter(username);
   const joined_date = new Date(createdAt);

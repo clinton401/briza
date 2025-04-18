@@ -124,7 +124,7 @@ export const SearchPageUI: FC<{ session: SessionType }> = ({ session }) => {
             Start Searching
           </h1>
           <p className=" ">
-            Type something in the search bar to find what you're looking for.
+            Type something in the search bar to find what you&apos;re looking for.
           </p>
         </section>
       )}

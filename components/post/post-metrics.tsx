@@ -7,9 +7,6 @@ import { IoEyeOutline } from "react-icons/io5";
 import { LiaComments } from "react-icons/lia";
 import { formatNumber } from "@/lib/random-utils";
 import {PostMetricsTypes} from "@/lib/types";
-import {unknown_error} from "@/lib/variables";
-import createToast from "@/hooks/create-toast";
-import {bookmarkOrUnbookmarkPost} from "@/actions/bookmark-or-unbookmark-post";
 import useToggleLike from "@/hooks/use-toggle-like"
 import useToggleBookmark from "@/hooks/use-toggle-bookmark"
 type PostMetricsProps = {

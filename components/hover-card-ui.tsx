@@ -3,7 +3,6 @@ import {FC, ReactNode} from "react";
 import { User2, CalendarIcon, Check  } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import { Button } from "@/components/ui/button"
 import {
   HoverCard,
   HoverCardContent,

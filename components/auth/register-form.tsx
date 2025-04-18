@@ -23,7 +23,7 @@ import {useRouter} from "next/navigation";
 export const RegisterForm: FC = () => {
     const [isPending, setIsPending] = useState(false);
   const redirect = useGetRedirectUrl();
-  const { error, setError, success, setSuccess, isTyping, setIsTyping } =
+  const { error, setError, success, setSuccess, setIsTyping } =
   useIsTyping();
   const {push} = useRouter();
   const form = useForm<z.infer<typeof RegisterSchema>>({

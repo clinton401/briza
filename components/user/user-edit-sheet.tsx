@@ -1,18 +1,18 @@
 import {FC} from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+// import { Input } from "@/components/ui/input"
+// import { Label } from "@/components/ui/label"
 import {
   Sheet,
   SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
+  // SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { CompleteProfileForm } from "../auth/complete-profile-form";
+// import { CompleteProfileForm } from "../auth/complete-profile-form";
 import {UserEditProfileForm} from "@/components/user/user-edit-profile-form";
 import {UserResponse} from "@/lib/types"
 
@@ -26,7 +26,7 @@ export const UserEditSheet: FC<{user: UserResponse}> =({user}) =>  {
         <SheetHeader>
           <SheetTitle>Edit profile</SheetTitle>
           <SheetDescription>
-            Make changes to your profile here. Click save when you're done.
+            Make changes to your profile here. Click save when you&apos;re done.
           </SheetDescription>
         </SheetHeader>
         {/* <div className="grid gap-4 py-4">

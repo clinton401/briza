@@ -1,6 +1,5 @@
 import {FC} from 'react'
 import {Button} from "@/components/ui/button";
-import {MiniLoader} from "@/components/mini-loader";
 import {Loader} from "lucide-react";
 type RegenerateProps = {
     isNewEmailPending: boolean;

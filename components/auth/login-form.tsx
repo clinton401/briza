@@ -20,7 +20,6 @@ import { LoadingButton } from "@/components/auth/loading-button";
 import Link from "next/link";
 import useGetRedirectUrl from "@/hooks/use-get-redirect-url";
 import  useCountdown  from "@/hooks/use-countdown";
-import { useRouter } from "next/navigation";
 import {login} from "@/actions/login"
 import useIsTyping from "@/hooks/use-is-typing";
 import {regenerateTwoFAToken} from "@/actions/regenerate-two-fa-tokens";
@@ -29,7 +28,7 @@ export const LoginForm: FC = () => {
     const [is2FA, setIs2FA] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [isNewEmailPending, setIsNewEmailPending] = useState(false);
-  const { error, setError, success, setSuccess, isTyping, setIsTyping } =
+  const { error, setError, success, setSuccess, setIsTyping } =
     useIsTyping();
     const {
       isNewClicked: isResendClicked,
@@ -37,7 +36,6 @@ export const LoginForm: FC = () => {
       countdown: resetCounter,
     } = useCountdown();
   const redirect = useGetRedirectUrl();
-  const {push } = useRouter();
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
         defaultValues: {

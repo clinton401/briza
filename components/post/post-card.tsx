@@ -69,6 +69,16 @@ export const PostCard: FC<{
   const post_owner_account_created_at = user.createdAt;
   const is_post_owner_blue_verified = user.blueCheckVerified;
   const isFollowing = postDetails.isFollowing;
+    useEffect(() => {
+    if (media) {
+      const links = media.map((file) => {
+        return { id: file.id, url: file.mediaUrl };
+      });
+      setModalLinks(links);
+    } else {
+      setModalLinks(null);
+    }
+  }, [media]);
 
   if (
     !post_owner_profile_pic ||
@@ -82,16 +92,7 @@ export const PostCard: FC<{
   )
     return null;
 
-  useEffect(() => {
-    if (media) {
-      const links = media.map((file) => {
-        return { id: file.id, url: file.mediaUrl };
-      });
-      setModalLinks(links);
-    } else {
-      setModalLinks(null);
-    }
-  }, [media]);
+
   const uppercase_name = getUppercaseFirstLetter(post_owner_name);
   const uppercase_username = getUppercaseFirstLetter(post_owner_username);
   const joined_date = new Date(post_owner_account_created_at);

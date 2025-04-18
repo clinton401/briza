@@ -2,7 +2,7 @@ import {FC} from "react";
 import { MessageType } from "@/lib/types";
 import {
     dateHandler,
-    timeAgoNumber,
+    // timeAgoNumber,
   } from "@/lib/random-utils";
 
 
@@ -11,7 +11,7 @@ export const MessageCard: FC<{message: MessageType, userId: string}> = ({message
     const messageDate = new Date(
         message.createdAt 
       );
-    const { amount, type } = timeAgoNumber(messageDate);
+    // const { amount, type } = timeAgoNumber(messageDate);
       const { monthText, dayOfMonth, year } =
         dateHandler(messageDate);
         function formatCustomTime(): string {

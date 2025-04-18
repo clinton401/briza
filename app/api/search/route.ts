@@ -99,11 +99,11 @@ export async function GET(req: Request) {
       });
     }
 
-    let whereCondition: any = {
+    const whereCondition: {} = {
       content: { contains: query, mode: "insensitive" },
     };
 
-    let orderByCondition: any[] = [{ createdAt: "desc" }];
+    let orderByCondition: {}[] = [{ createdAt: "desc" }];
     if (filter === "top") {
       orderByCondition = [
         { metrics: { likesCount: "desc" } },
@@ -111,7 +111,7 @@ export async function GET(req: Request) {
       ];
     }
 
-    let selectFields: any = {
+    const selectFields = {
       id: true,
       content: true,
       createdAt: true,
@@ -153,7 +153,7 @@ export async function GET(req: Request) {
     };
 
     if (filter === "media") {
-      whereCondition.media = { some: {} };
+      (whereCondition as {media : {}}).media = { some: {} };
     }
 
     // **Fetch Posts**
@@ -173,8 +173,8 @@ export async function GET(req: Request) {
       hasLiked: post.likes.length > 0,
       hasBookmarked: post.bookmarks.length > 0,
       isFollowing:
-        (post.user as any)?.followers?.some(
-          (follow: any) => follow.followingId === (post.user as any)?.id
+        (post.user as { id: string, followers: {followingId: string}[]})?.followers?.some(
+          (follow) => follow.followingId === post.user?.id
         ) ?? false,
     }));
 
