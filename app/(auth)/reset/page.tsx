@@ -6,10 +6,12 @@ export const metadata = {
   description: 'Securely reset your Briza password and regain access to your account.',
 };
 
-const ResetPasswordPage: FC<{searchParams: {
-    redirect?: string
-  }}> = async ({searchParams}) => {
-    const {redirect} =  await searchParams;
+const ResetPasswordPage: FC<{
+  searchParams: Promise<{
+    redirect?: string;
+  }>;
+}> = async ({ searchParams }) => {
+  const { redirect } = await searchParams;
   return (
     <FormWrapper
       title="Forgot your password?"
@@ -18,7 +20,6 @@ const ResetPasswordPage: FC<{searchParams: {
         redirect ? `?redirect=${encodeURIComponent(redirect)} ` : ""
       }`}
     >
-        
       <ResetForm />
     </FormWrapper>
   );

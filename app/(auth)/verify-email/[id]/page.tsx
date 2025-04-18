@@ -6,9 +6,9 @@ export const metadata = {
   description: 'Verify your email address to activate your Briza account and start connecting.',
 };
 
-const VerifyEmailPage: FC<{searchParams: {
+const VerifyEmailPage: FC<{searchParams: Promise<{
   redirect?: string
-}}> = async({searchParams}) => {
+}>}> = async({searchParams}) => {
   const {redirect} =  await searchParams;
   return (
     <FormWrapper title="Verify your email"

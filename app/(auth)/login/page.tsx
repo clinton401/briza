@@ -6,9 +6,9 @@ export const metadata = {
   description: 'Access your Briza account and stay connected with the world in real time.',
 };
 
-const LoginPage: FC<{searchParams: {
+const LoginPage: FC<{searchParams: Promise<{
   redirect?: string
-}}> = async ({searchParams}) => {
+}>}> = async ({searchParams}) => {
   const {redirect} = await searchParams;
   return (
     <FormWrapper

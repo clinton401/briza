@@ -6,9 +6,9 @@ export const metadata = {
   description: 'Join Briza and start sharing your thoughts, following others, and being part of the conversation.',
 };
 
- const RegisterPage: FC<{searchParams: {
+ const RegisterPage: FC<{searchParams: Promise<{
   redirect?: string
-}}> = async ({searchParams}) => {
+}>}> = async ({searchParams}) => {
   const {redirect} = await searchParams;
   return (
     <FormWrapper
