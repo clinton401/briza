@@ -9,7 +9,7 @@ type UserPageProps = {
   }>;
 };
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   try{
   const session = await getServerUser();
   if (!session) {
@@ -18,9 +18,9 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       description: 'View user profile on Briza.',
     };
   }
-
+    const { id } = await params;
   const user = await prisma.user.findUnique({
-    where: { id: params.id },
+    where: { id},
     select: {
       name: true,
       username: true,

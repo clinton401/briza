@@ -4,7 +4,7 @@ import getServerUser from "@/hooks/get-server-user";
 import { Metadata } from 'next';
 import { prisma } from '@/lib/db';
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   try {
     const session = await getServerUser();
     if (!session) {
@@ -13,9 +13,9 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
         description: 'Private conversation on Briza.',
       };
     }
-
+const { id } = await params;
     const conversation = await prisma.conversation.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user1: {
           select: {

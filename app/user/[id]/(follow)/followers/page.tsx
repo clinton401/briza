@@ -7,11 +7,12 @@ import { Metadata } from "next";
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   try {
+const { id } = await params;
     const user = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: {
         name: true,
         username: true,

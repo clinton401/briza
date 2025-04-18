@@ -6,8 +6,8 @@ import getServerUser from "@/hooks/get-server-user";
 import { prisma } from '@/lib/db';
 import { Metadata } from 'next';
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const { id: postId } = params;
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id: postId } = await params;
 try{
   const post = await prisma.post.findUnique({
     where: { id: postId },
