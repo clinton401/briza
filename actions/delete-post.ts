@@ -26,7 +26,7 @@ export const deletePost = async (postId: string) => {
         where: { userId: session.id },
       });
 
-      if (userMetrics && userMetrics.postCount > 0) {
+      if (userMetrics && userMetrics.postCount && userMetrics.postCount > 0) {
         await tx.userMetrics.update({
           where: { userId: session.id }, 
           data: { postCount: { decrement: 1 } },
