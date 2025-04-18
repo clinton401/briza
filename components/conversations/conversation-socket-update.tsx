@@ -66,7 +66,7 @@ export const ConversationSocketUpdate: FC<{
 
           if (data.errors) return;
           if (
-            "id" in updatedConversation &&
+             updatedConversation &&
             (updatedConversation.user1Id === session.id ||
               updatedConversation.user2Id === session.id)
           ) {
@@ -115,7 +115,7 @@ export const ConversationSocketUpdate: FC<{
 
           if (data.errors) return;
           if (
-            "id" in updatedConversation &&
+            updatedConversation &&
             (updatedConversation.user1Id === session.id ||
               updatedConversation.user2Id === session.id)
           ) {
@@ -143,9 +143,9 @@ export const ConversationSocketUpdate: FC<{
           const newMessage = (data ).new;
 
           if (data.errors) return;
-          if ("id" in newMessage ) {
+          if (newMessage ) {
           const cleanedMessage = { ...newMessage };
-delete cleanedMessage.isDeleted;
+// delete cleanedMessage.isDeleted;
 
             await queryClient.invalidateQueries(
                 {
@@ -226,7 +226,7 @@ delete cleanedMessage.isDeleted;
           ).new;
 
           if (data.errors) return;
-          if ("id" in updatedStatus && updatedStatus.userId === session.id) {
+          if (updatedStatus && updatedStatus.userId === session.id) {
             await queryClient.invalidateQueries(
                 {
                   queryKey: ["conversations"],
