@@ -1,3 +1,4 @@
+"use server";
 import { prisma } from "@/lib/db";
 import getServerUser from "@/hooks/get-server-user";
 import { unauthorized_error } from "@/lib/variables";
