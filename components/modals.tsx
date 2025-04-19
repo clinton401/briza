@@ -1,5 +1,5 @@
 "use client";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -27,6 +27,7 @@ const appearAnimation = {
   },
 };
 export const Modals: FC<ModalsProps> = ({ isOpen, closeModal, children, showCloseButton = true }) => {
+  const divRef = useRef<HTMLDivElement | null>(null)
   return (
     <AnimatePresence>
       {isOpen && (
@@ -37,6 +38,7 @@ export const Modals: FC<ModalsProps> = ({ isOpen, closeModal, children, showClos
           exit="exit"
           key="modals"
           className="bg-black/80 z-[5000] fixed top-0 left-0 w-full px-p-half py-8 h-dvh overflow-x-hidden overflow-y-auto"
+          ref={divRef}
           onClick={closeModal}
         >
           <div className="w-full flex  items-center flex-col gap-6 justify-center relative  h-full ">
@@ -45,7 +47,7 @@ export const Modals: FC<ModalsProps> = ({ isOpen, closeModal, children, showClos
               variant="outline"
               size="icon"
               className="rounded-full absolute inset-0 z-30 "
-              onClick={closeModal}
+              onClick={()=> divRef.current?.click()}
             >
               <X />
             </Button>)}
