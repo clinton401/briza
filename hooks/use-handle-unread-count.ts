@@ -48,11 +48,11 @@ const useHandleUnreadCount = (session: SessionType | undefined)=> {
             { event: "INSERT", schema: "public", table: "Notification" },
             async (payload) => {
               const data = payload as unknown as NotificationEvent;
-              const isNewAvailable = hasAtLeastOneProperty(data.new);
+              const isNewAvailable =  data.new && hasAtLeastOneProperty(data.new);
               if (data.errors) return;
               if (
                 isNewAvailable &&
-                "userId" in data.new &&
+                data.new && 
                 data.new.userId === session.id
               ) {
                 await queryClient.invalidateQueries(
