@@ -299,7 +299,7 @@ useEffect(() => {
 
   return (
     <main className="w-full pb-16  min-h-dvh flex flex-col " >
-      <section className="flex justify-between gap-x-2 gap-y-4  border z-50 sticky flex-wrap bg-background top-0 left-0  w-full items-center">
+      <section className="flex justify-between gap-x-2 gap-y-4  border border-b z-50 sticky flex-wrap bg-background top-0 left-0  w-full items-center">
         <div className="w-full flex items-center py-3 justify-between flex-wrap gap-x-2 gap-y-4 px-p-half ">
           <div className="grow flex items-center  flex-wrap gap-2">
             <Button

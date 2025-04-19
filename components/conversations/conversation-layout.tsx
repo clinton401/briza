@@ -93,7 +93,7 @@ export const ConversationLayout: FC = () => {
   
   return (
     <div className="w-full pb-16 md:pb-8 ">
-      <section className="flex justify-between gap-x-2 gap-y-4 px-p-half border z-50 sticky flex-wrap bg-background top-0 left-0  w-full items-center py-2">
+      <section className="flex justify-between gap-x-2 gap-y-4 px-p-half border border-b z-50 sticky flex-wrap bg-background top-0 left-0  w-full items-center py-2">
         <div className="flex items-center gap-4 justify-between w-full flex-wrap">
           <h2 className={`font-bold text-lg ${notable.className}`}>Messages</h2>
           <NewConvoDialog>

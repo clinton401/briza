@@ -88,7 +88,7 @@ export const MobileNavbar: FC<{
   const isChatPage = /^\/messages\/[^/]+$/.test(pathname);
   if (isChatPage) return;
   return (
-    <aside className="fixed bottom w-full left-0 bottom-0 py-4 bg-background border">
+    <aside className="fixed bottom w-full left-0 bottom-0 py-4 bg-background border-t border">
       <ul className="w-full flex items-center justify-evenly ">
         {links.map((link) => {
           return (

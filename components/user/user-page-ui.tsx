@@ -140,7 +140,7 @@ const tabs = ["Posts", "Likes", "Bookmarks"]
 
   return (
     <div className="w-full pb-16 md:pb-8 min-h-dvh   ">
-      <section className="flex justify-between gap-x-2 gap-y-4 px-p-half border z-50 sticky flex-wrap bg-background top-0 left-0  w-full items-center py-2">
+      <section className="flex justify-between gap-x-2 gap-y-4 px-p-half border-b border z-50 sticky flex-wrap bg-background top-0 left-0  w-full items-center py-2">
         <div className="flex items-center gap-4 flex-wrap">
           <Button
             variant="outline"
