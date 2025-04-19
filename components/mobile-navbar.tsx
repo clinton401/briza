@@ -87,8 +87,9 @@ export const MobileNavbar: FC<{
 
   const isChatPage = /^\/messages\/[^/]+$/.test(pathname);
   if (isChatPage) return;
+
   return (
-    <aside className="fixed bottom w-full left-0 bottom-0 py-4 bg-background border-t border">
+    <aside className="fixed bottom w-full left-0 bottom-0 py-4 bg-background border-t ">
       <ul className="w-full flex items-center justify-evenly ">
         {links.map((link) => {
           return (
@@ -102,7 +103,7 @@ export const MobileNavbar: FC<{
                 !error &&
                 notificationsCount !== undefined &&
                 notificationsCount > 0 && (
-                  <p className="h-5 w-5 absolute bottom-[60%] left-[50%] rounded-full bg-destructive flex items-center justify-center">
+                  <p className="h-5 w-5 absolute bottom-[60%] text-xs left-[50%] rounded-full bg-destructive flex items-center justify-center">
                       {notificationsCount > 99 ? "99+": notificationsCount}
                   </p>
                 )}
