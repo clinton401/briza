@@ -37,7 +37,7 @@ export default auth((req) => {
   if (!isLoggedIn && !isPublicRoute && !isAuthRoute) {
     return Response.redirect(
       new URL(
-        `/auth/login?redirect=${encodeURIComponent(nextUrl.pathname)}`,
+        `/login?redirect=${encodeURIComponent(nextUrl.pathname)}`,
         nextUrl
       )
     );
