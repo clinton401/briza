@@ -1,25 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import authConfig from "@/auth.config";
+import NextAuth from "next-auth";
+const { auth } = NextAuth(authConfig);
+
 import {
   DEFAULT_LOGIN_REDIRECT,
+  apiAuthPrefix,
   authRoutes,
   publicRoutes,
-  apiAuthPrefix,
+  authPrefix,
 } from "@/routes";
 
-export default async function middleware(req: NextRequest) {
+export default auth((req) => {
   const { nextUrl } = req;
 
-  const session = await getToken({
-    req,
-    secret: process.env.AUTH_SECRET,
-    cookieName:
-      process.env.NODE_ENV === "production"
-        ? "__Secure-next-auth.session-token"
-        : "next-auth.session-token",
-  });
-
-  const isLoggedIn = !!session;
+  const isLoggedIn = !!req.auth;
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isAuthRoute = authRoutes.some((route) =>
     nextUrl.pathname.startsWith(route)
@@ -28,57 +22,29 @@ export default async function middleware(req: NextRequest) {
     nextUrl.pathname.startsWith(route)
   );
 
-  const redirect =
-    isApiAuthRoute || nextUrl.pathname === DEFAULT_LOGIN_REDIRECT
-      ? null
-      : nextUrl.pathname;
+  const redirect = nextUrl.searchParams.get("redirect");
 
-  if (isApiAuthRoute) {
-    return NextResponse.next();
-  }
+  if (isApiAuthRoute) return;
 
   if (isAuthRoute) {
     if (isLoggedIn) {
-      return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.url));
+      const redirectUrl = redirect || DEFAULT_LOGIN_REDIRECT;
+      return Response.redirect(new URL(redirectUrl, nextUrl));
     }
-    return NextResponse.next();
+    return;
   }
 
-  // if (
-  //   isLoggedIn &&
-  //   session &&
-  //   (!session.username || !session.bio) &&
-  //   nextUrl.pathname !== "/complete-profile"
-  // ) {
-  //   return NextResponse.redirect(
-  //     new URL(
-  //       `/complete-profile${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`,
-  //       req.url
-  //     )
-  //   );
-  // }
-
-  // if (
-  //   isLoggedIn &&
-  //   session &&
-  //   session.username &&
-  //   session.bio &&
-  //   nextUrl.pathname === "/complete-profile"
-  // ) {
-  //   return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.url));
-  // }
-
   if (!isLoggedIn && !isPublicRoute && !isAuthRoute) {
-    return NextResponse.redirect(
+    return Response.redirect(
       new URL(
-        `/login${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`,
-        req.url
+        `/auth/login?redirect=${encodeURIComponent(nextUrl.pathname)}`,
+        nextUrl
       )
     );
   }
 
-  return NextResponse.next();
-}
+  return;
+});
 
 export const config = {
   matcher: [

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Briza',
     description: 'Briza is a dynamic social media platform that lets you share thoughts, follow people, and join the conversation in real time.',
-    url: 'https://brizaa.vercel.app',  
+    url: 'https://briza-nine.vercel.app',  
     images: [
       {
         url: '/briza-thumbnail.png',  
