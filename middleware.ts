@@ -1,18 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { DEFAULT_LOGIN_REDIRECT, authRoutes, publicRoutes, apiAuthPrefix } from "@/routes";
+import {
+  DEFAULT_LOGIN_REDIRECT,
+  authRoutes,
+  publicRoutes,
+  apiAuthPrefix,
+} from "@/routes";
 
 export default async function middleware(req: NextRequest) {
   const { nextUrl } = req;
 
-  // Extract the user session from the JWT token
-  const session = await getToken({ req, secret: process.env.AUTH_SECRET });
-  
+  const session = await getToken({
+    req,
+    secret: process.env.AUTH_SECRET,
+    cookieName:
+      process.env.NODE_ENV === "production"
+        ? "__Secure-next-auth.session-token"
+        : "next-auth.session-token",
+  });
 
   const isLoggedIn = !!session;
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isAuthRoute = authRoutes.some((route) => nextUrl.pathname.startsWith(route));
-  const isPublicRoute = publicRoutes.some((route) => nextUrl.pathname.startsWith(route));
+  const isAuthRoute = authRoutes.some((route) =>
+    nextUrl.pathname.startsWith(route)
+  );
+  const isPublicRoute = publicRoutes.some((route) =>
+    nextUrl.pathname.startsWith(route)
+  );
 
   const redirect =
     isApiAuthRoute || nextUrl.pathname === DEFAULT_LOGIN_REDIRECT
