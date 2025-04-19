@@ -47,7 +47,7 @@ const useHandleUnreadCount = (session: SessionType | undefined)=> {
             "postgres_changes",
             { event: "INSERT", schema: "public", table: "Notification" },
             async (payload) => {
-              const data = payload as NotificationEvent;
+              const data = payload as unknown as NotificationEvent;
               const isNewAvailable = hasAtLeastOneProperty(data.new);
               if (data.errors) return;
               if (
