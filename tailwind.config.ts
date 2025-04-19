@@ -83,7 +83,7 @@ export default {
   		},
   		screens: {},
   		spacing: {
-  			'p-half': '2.5%'
+  			'p-half': '5%'
   		}
   	}
   },
