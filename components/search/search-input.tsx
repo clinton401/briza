@@ -100,7 +100,7 @@ export const SearchInput: FC<{
           <ArrowLeft className="" />
         </Button>
 
-        <div className=" grow min-w-[300px]  relative ">
+        <div className=" grow min-w-[150px]  relative ">
           <Input
             value={inputValue}
             placeholder="Search"
@@ -208,10 +208,10 @@ export const SearchInput: FC<{
           </AnimatePresence>
         </div>
       </div>
-      <div className="w-full flex items-center  *:grow  *:rounded-none flex-wrap  *:py-6 justify-center ">
+      <div className="w-full flex items-center  *:grow  *:rounded-none flex-wrap  *:px-2 *:py-6 justify-center ">
         <Button
           variant="outline"
-          size="lg"
+          // size="lg"
           onClick={() => {
             setFilter("TOP");
           }}
@@ -221,7 +221,7 @@ export const SearchInput: FC<{
         </Button>
         <Button
           variant="outline"
-          size="lg"
+          // size="lg"
           onClick={() => {
             setFilter("LATEST");
           }}
@@ -231,7 +231,7 @@ export const SearchInput: FC<{
         </Button>
         <Button
           variant="outline"
-          size="lg"
+          // size="lg"
           onClick={() => {
             setFilter("PEOPLE");
           }}
@@ -241,7 +241,7 @@ export const SearchInput: FC<{
         </Button>
         <Button
           variant="outline"
-          size="lg"
+          // size="lg"
           onClick={() => {
             setFilter("MEDIA");
           }}
