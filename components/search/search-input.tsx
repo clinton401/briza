@@ -90,7 +90,7 @@ export const SearchInput: FC<{
   };
   return (
     <section className="flex justify-between gap-x-2 gap-y-4  border border-b z-50 sticky flex-wrap bg-background top-0 left-0  w-full items-center">
-      <div className="w-full flex items-center pt-2 gap-x-6 gap-y-4 px-p-half relative flex-wrap">
+      <div className="w-full flex items-center pt-2 gap-x-2 md:gap-x-6 gap-y-4 px-p-half relative flex-wrap">
         <Button
           variant="outline"
           size="icon"
@@ -100,7 +100,7 @@ export const SearchInput: FC<{
           <ArrowLeft className="" />
         </Button>
 
-        <div className=" grow min-w-[150px]  relative ">
+        <div className=" grow min-w-[100px]  relative ">
           <Input
             value={inputValue}
             placeholder="Search"
