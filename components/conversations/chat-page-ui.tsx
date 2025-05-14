@@ -28,12 +28,12 @@ import { removeDuplicates } from "@/lib/random-utils";
 import { MessageCard } from "@/components/conversations/message-card";
 import handleTextAreaHeight from "@/hooks/handle-text-area-height";
 import { Textarea } from "../ui/textarea";
-import useSendMessage from "@/hooks/use-send-message";
 
 import { useInView } from "react-intersection-observer";
 import createToast from "@/hooks/create-toast";
 import { EmojiSelector } from "@/components/emoji-selector";
 import { markConvoAsRead } from "@/actions/mark-convo-as-read";
+import axios, { AxiosError } from "axios";
 // import { Virtuoso } from 'react-virtuoso';
 type FetchMessagesResult = {
   data: MessageType[];
@@ -46,7 +46,7 @@ const fetchConvo = async ({
   queryKey,
   signal,
 }: QueryFunctionContext<ConvoQueryKey>): Promise<ConversationType> => {
-  const [, convoId] = queryKey;
+        const [, convoId] = queryKey;
   const response = await fetch(`/api/conversations/${convoId}`, { signal });
 
   if (!response.ok) {
@@ -124,7 +124,6 @@ const anchorElementRef = useRef<HTMLDivElement>(null);
 const { ref, inView } = useInView();
   const { ref: intersectionRef, inView: isBottomRefInView } = useInView();
   const { textareaRef, handleInput } = handleTextAreaHeight();
-  const { mutate: sendMessage } = useSendMessage();
   const { createError } = createToast();
   const queryClient = useQueryClient();
    const scrollToBottom = () => {
@@ -245,13 +244,19 @@ useEffect(() => {
   const uppercase_name = getUppercaseFirstLetter(user.name);
   const uniqueMessages = removeDuplicates(messages);
 
-  const handleMessageSending = () => {
+  const handleMessageSending = async () => {
     if (newMessage.trim().length < 1) return;
+const convoId = conversation.id;
+    const previousConversations = queryClient.getQueryData(["conversations"]);
+    const previousConversation = queryClient.getQueryData(["conversation", convoId]);
+    const previousConversationMessages = queryClient.getQueryData(["messages", convoId]);
+const messageId = uuidv4();
+    try{
     const date = new Date()
     const newData: MessageType = {
       content: newMessage,
       conversationId: conversation.id,
-      id: uuidv4(),
+      id: messageId,
       senderId: session.id,
       receiverId: user.id,
       createdAt: date,
@@ -271,29 +276,101 @@ useEffect(() => {
           return page;
         }),
       };
-    })
-    sendMessage(
-      {
-        convoId: conversation.id,
-        message: newMessage,
-        receiverId: user.id,
-        senderId: session.id,
-      },
-      {
-        onError: (error) => {
-          console.error("Error sending message:", error);
-          createError(error?.message || `Unable to  send message `);
-        },
+    });
+    queryClient.setQueryData(["conversation", convoId], (old: ConversationType) => {
+        if (!old) return;
+        return {
+          ...old,
+          lastMessage: newMessage,
+          lastMessageAt: date,
+          isRead: true
+        }
+      })
+
+      queryClient.setQueryData(["conversations"], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            data: page.data.map((convo: ConversationType) =>
+              convo?.id === convoId
+                ? {
+                  ...convo,
+                  lastMessage: newMessage,
+                  lastMessageAt: date,
+                  isRead: true
+                }
+                : convo
+            ),
+          })),
+        };
+      });
+
+
+      setNewMessage("");
+      if (textareaRef && textareaRef.current) {
+        textareaRef.current.style.height = "40px";
       }
-    );
-    setNewMessage("");
-    if(textareaRef && textareaRef.current){
-    textareaRef.current.style.height = "40px"
-    }
-    textareaRef.current?.focus();
-    setTimeout(() => {
-      scrollToBottom();
-    }, 100);
+      textareaRef.current?.focus();
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+
+
+      const response = await axios.post(`/api/conversations/${convoId}/messages`, { content: newMessage, receiverId: user.id })
+      const newMsg: MessageType | null = response.data?.message;
+      if (!newMsg) {
+        createError("No message returned from server");
+        
+      
+        return;
+      }
+
+
+      queryClient.setQueryData(["messages", convoId], (old: {pageParams: number[],pages: {data: MessageType[]}[]}| null) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page) => ({
+            ...page,
+            data: page.data.map((msg) =>
+              msg?.id === id
+                ? {
+                 ...msg,
+                 id: newMsg.id
+                }
+                : msg
+            ),
+          })),
+        };
+      });
+         
+
+    
+   
+  }catch(error){
+    console.error("Error sending message:", error);
+    if (error instanceof AxiosError) {
+       createError(
+        error.response?.data?.error || "Failed to send message"
+      );
+    } else {
+          createError(`Failed to  send message `);
+      }
+      queryClient.setQueryData(
+        ["messages", convoId],
+        previousConversationMessages
+      );
+      queryClient.setQueryData(
+         ["conversations"],
+         previousConversations
+       );
+      queryClient.setQueryData(
+         ["conversation", convoId],
+         previousConversation
+       );
+  }
   };
  
 

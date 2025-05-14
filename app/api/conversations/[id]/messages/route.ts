@@ -19,7 +19,7 @@ export async function GET(
 
     const { searchParams } = new URL(req.url);
     const page = searchParams.get("page") || "1";
-    const { pageSize, currentPage, offset } = calculatePagination(Number(page), 10);
+    const { pageSize, currentPage, offset } = calculatePagination(Number(page), 50);
 
     const conversation = await prisma.conversation.findFirst({
       where: {

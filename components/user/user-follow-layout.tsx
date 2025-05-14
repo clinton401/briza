@@ -29,6 +29,7 @@ export const UserFollowLayout: FC<{ id: string; children: ReactNode }> = ({
   id,
   children,
   
+
 }) => {
   const [filter, setFilter] = useState<"FOLLOWERS" | "FOLLOWING">("FOLLOWERS");
   const fetchUsers = async ({
@@ -93,7 +94,6 @@ export const UserFollowLayout: FC<{ id: string; children: ReactNode }> = ({
     users: removeDuplicates(users || []),
     followId: id,
   };
-  console.log({users})
 
   const message =
     filter.toLowerCase() === "followers"

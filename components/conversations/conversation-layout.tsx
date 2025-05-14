@@ -51,8 +51,6 @@ const fetchConversations = async ({
 export const ConversationLayout: FC = () => {
   const [inputValue, setInputValue] = useState("");
   const [isFocused, setIsFocused] = useState(false);
-
-  // const [debouncedSearch] = useDebounce(inputValue, 500);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const {
     data,

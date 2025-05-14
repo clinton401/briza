@@ -12,7 +12,7 @@ export const getHomePagePosts = async (page = 1) => {
         data: undefined
     }
     const userId = session.id;
-    const pageSize = 10;
+    const pageSize = 15;
     const currentPage = Math.max(1, Number(page) || 1);
     const offset = (currentPage - 1) * pageSize;
 

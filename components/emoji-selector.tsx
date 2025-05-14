@@ -46,7 +46,7 @@ export const EmojiSelector = memo(forwardRef<
   return (
     <Popover>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent className="w-[320px] p-0 border-none bg-transparent">
+      <PopoverContent className="w-[320px] p-0 border-none z-[6000] bg-transparent" onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}>
       <div
           className="bg-background w-full"
           id="emoji_picker"

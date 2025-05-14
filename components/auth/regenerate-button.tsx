@@ -13,7 +13,7 @@ export const RegenerateButton: FC<RegenerateProps> = ({isNewEmailPending, isRese
     <Button  disabled={disabled || isResendClicked } className={ `w-full`} variant={ "secondary"} onClick={resendCode}>
 
     { isNewEmailPending &&  <>
-      <Loader className="mr-1 h-4 w-4 animate-spin"/> Please wait...</>}
+      <Loader className="mr-1 h-4 w-4 animate-spin"/> Loading...</>}
     {!isNewEmailPending && isResendClicked && <>{ resetCounter < 10 ? `00:0${resetCounter}` : `00:${resetCounter}`}</>}
 
 {!isNewEmailPending && !isResendClicked && "Resend"}

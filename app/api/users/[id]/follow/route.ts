@@ -108,14 +108,14 @@ export async function GET(
 
     const users = follows.map((follow) =>
       filter === "followers" ? follow.follower : follow.following
-    );
+  );
 
-    // Fetch whether each user follows the logged-in user
+    
     const userIds = users.map((user) => user.id);
     const followRelations = await prisma.follow.findMany({
       where: {
-        followerId: { in: userIds }, // These users are the followers or following
-        followingId: session.id, // Checking if they follow the logged-in user
+        followingId: { in: userIds }, 
+        followerId: session.id,
       },
       select: { followerId: true },
     });

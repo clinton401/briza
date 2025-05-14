@@ -2,7 +2,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { FC, ReactNode, useEffect } from "react";
 import { DEFAULT_LOGIN_REDIRECT, apiAuthPrefix, authRoutes } from "@/routes";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import type { SessionType } from "@/lib/types";
 import { MobileNavbar } from "@/components/mobile-navbar";
@@ -75,7 +75,8 @@ export const ParentRedirect: FC<{
           >
             <SidebarProvider>
               <AppSidebar session={session} {...unreadCount} />
-              <SidebarTrigger /> {children}
+              {/* <SidebarTrigger /> */}
+               {children}
               {!isMessageOrSettingsPage && <HomeAside session={session as SessionType} />}
             </SidebarProvider>
           </div>
