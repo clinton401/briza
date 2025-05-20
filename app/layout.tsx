@@ -8,7 +8,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner"
 
 import { ParentRedirect } from "@/components/parent-redirect";
 import {TanstackQueryClient} from "@/components/tanstack-query-client";
-import {ConversationSocketUpdate} from "@/components/conversations/conversation-socket-update"
+import {ConversationSocketUpdate} from "@/components/conversations/conversation-socket-update";
+import { Analytics } from "@vercel/analytics/next";
 const lato = Lato({ subsets: ["latin"], weight: ["100", "300" , "400"  , "700", "900" ] });
 
 export const metadata: Metadata = {
@@ -80,6 +81,7 @@ export default async  function RootLayout({
           </ConversationSocketUpdate>
           </ThemeProvider>
           </TanstackQueryClient>
+          <Analytics />
       </body>
     </html>
   );

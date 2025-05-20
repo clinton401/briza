@@ -114,21 +114,20 @@ export async function GET(
     const userIds = users.map((user) => user.id);
     const followRelations = await prisma.follow.findMany({
       where: {
+        followerId: session.id,      
         followingId: { in: userIds }, 
-        followerId: session.id,
       },
-      select: { followerId: true },
+      select: { followingId: true },
     });
-
+    
     const followedByLoggedInUser = new Set(
-      followRelations.map((relation) => relation.followerId)
+      followRelations.map((relation) => relation.followingId)
     );
-
+    
     const formattedUsers = users.map((user) => ({
       ...user,
       hasFollowed: followedByLoggedInUser.has(user.id),
     }));
-
     const pages = calculateNextPage(currentPage, totalUsers, pageSize);
 
     return NextResponse.json({
