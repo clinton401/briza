@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import getServerUser from "@/hooks/get-server-user";
 import { rateLimit } from "@/lib/rate-limits";
 import { unknown_error, unauthorized_error } from "@/lib/variables";
+import { MAX_SUSPEND_COUNT } from "@/lib/auth-utils";
 const followError = (error: string) => {
   return { error, success: false };
 };
@@ -13,6 +14,9 @@ export const followOrUnfollowUser = async (
   const session = await getServerUser();
   if (!session) {
     return followError(unauthorized_error);
+  }
+  if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT) {
+    return followError("Your account has been blocked due to multiple violations.");
   }
 
   const rateLimitResult = rateLimit(session.id, true, { maxRequests: 15 });

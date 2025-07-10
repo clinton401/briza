@@ -10,6 +10,7 @@ import { ParentRedirect } from "@/components/parent-redirect";
 import {TanstackQueryClient} from "@/components/tanstack-query-client";
 import {ConversationSocketUpdate} from "@/components/conversations/conversation-socket-update";
 import { Analytics } from "@vercel/analytics/next";
+import {BlockedUser} from "@/components/blocked-user";
 const lato = Lato({ subsets: ["latin"], weight: ["100", "300" , "400"  , "700", "900" ] });
 
 export const metadata: Metadata = {
@@ -56,32 +57,26 @@ export default async  function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${lato.className} antialiased w-vw overflow-x-hidden`}
-      >
+      <body className={`${lato.className} antialiased w-vw overflow-x-hidden`}>
         <TanstackQueryClient>
-        <ThemeProvider
+          <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
-           <ConversationSocketUpdate session={session}>
-        <ParentRedirect session={session}>
-        <main
-      className={` w-full `}
-    >
-            {children}
-            
+            <main className={` w-full `}>
+              <BlockedUser session={session}>
+                <ConversationSocketUpdate session={session}>
+                  <ParentRedirect session={session}>{children}</ParentRedirect>
+                </ConversationSocketUpdate>
+              </BlockedUser>
             </main>
             <Sonner />
-            <Toaster/>
-            
-          </ParentRedirect>
-          </ConversationSocketUpdate>
+            <Toaster />
           </ThemeProvider>
-          </TanstackQueryClient>
-          <Analytics />
+        </TanstackQueryClient>
+        <Analytics />
       </body>
     </html>
   );

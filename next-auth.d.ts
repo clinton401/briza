@@ -21,7 +21,7 @@ declare module "next-auth" {
     lastLogin?: Date;
     createdAt?: Date;
     updatedAt?: Date;
-    googleId?: string;
+    // googleId?: string;
     twoFactorAuthentication?: boolean;
     blueCheckVerified: boolean;
     

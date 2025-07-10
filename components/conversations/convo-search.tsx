@@ -238,7 +238,7 @@ export const ConvoSearch: FC<{ inputValue: string }> = ({ inputValue }) => {
                                 <p className="truncate text-left  flex items-center  w-full">
                                   {uppercaseName}
                                   {result.user.blueCheckVerified && (
-                                    <span className="h-4 ml-1 aspect-square rounded-full bg-[#1DA1F2] flex items-center justify-center text-white">
+                                    <span className="size-4 ml-1 aspect-square rounded-full bg-[#1DA1F2] flex items-center justify-center text-white">
                                       <Check className="h-1 w-1" />
                                     </span>
                                   )}

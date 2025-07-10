@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import getServerUser from "@/hooks/get-server-user";
 import { unauthorized_error, unknown_error } from "@/lib/variables";
 import { rateLimit } from "@/lib/rate-limits";
+import { MAX_SUSPEND_COUNT } from "@/lib/auth-utils";
 
 const deletePostError = (error: string) => ({
   error,
@@ -12,6 +13,9 @@ const deletePostError = (error: string) => ({
 export const deletePost = async (postId: string) => {
   const session = await getServerUser();
   if (!session) return deletePostError(unauthorized_error);
+  if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT) {
+    return deletePostError("Your account has been blocked due to multiple violations.");
+  }
 
   const { error } = rateLimit(session.id, true);
   if (error) return deletePostError(error);

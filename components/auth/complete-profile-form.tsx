@@ -15,8 +15,13 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import useGetRedirectUrl from "@/hooks/use-get-redirect-url";
 import { completeProfileDetails } from "@/actions/complete-profile-details";
-import {Loader} from "lucide-react"
-export const CompleteProfileForm: FC = () => {
+import { Loader } from "lucide-react";
+import { verifyMedia } from "@/lib/verify-media";
+import { increaseSuspendCount } from "@/actions/increase-suspend-count";
+import { SessionType } from "@/lib/types";
+import { MAX_SUSPEND_COUNT } from "@/lib/auth-utils";
+
+export const CompleteProfileForm: FC<{session: SessionType}> = ({session}) => {
   const [isUsernameValid, setIsUsernameValid] = useState(true);
   const [isUsernameLoading, setIsUsernameLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -73,6 +78,7 @@ export const CompleteProfileForm: FC = () => {
     event: React.ChangeEvent<HTMLInputElement>,
     isProfile: boolean
   ) => {
+    if(session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT)  return createError("Your account has been blocked from uploading media due to multiple violations.");
     const fileInput = event.target;
 
     if (!fileInput.files || fileInput.files.length === 0) {
@@ -91,6 +97,16 @@ export const CompleteProfileForm: FC = () => {
       createError("Please upload a JPG or JPEG image.", "Invalid image type");
       return;
     }
+
+    const result = await verifyMedia(file);
+
+    if (!result.safe) {
+
+      const { error, success } = await increaseSuspendCount();
+      if (error || !success) return createError(error || "Media failed content moderation");
+      return createError(result.error || "Media failed content moderation")
+    }
+
 
     setUploading(true);
     setProgress(0);
@@ -211,6 +227,10 @@ export const CompleteProfileForm: FC = () => {
     updateFormDetails(key, value);
   };
   const submitHandler = async () => {
+    if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT)
+      return createError(
+        "Your account has been blocked due to multiple violations."
+      );
     if (uploading) return createError("Picture still uploading");
 
     if (!profileId || !profileUrl) {

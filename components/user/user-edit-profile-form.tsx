@@ -14,13 +14,18 @@ import { useDebouncedCallback } from "use-debounce";
 // import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
-import { UserResponse } from "@/lib/types";
+import { UserResponse, SessionType } from "@/lib/types";
 import { editProfileDetails } from "@/actions/edit-profile-details";
 import { useQueryClient } from "@tanstack/react-query";
+import { MAX_SUSPEND_COUNT } from "@/lib/auth-utils";
+import { increaseSuspendCount } from "@/actions/increase-suspend-count";
+
+import { verifyMedia } from "@/lib/verify-media";
 export const UserEditProfileForm: FC<{
   user: UserResponse;
+  session: SessionType;
   SheetCloseComponent: ElementType;
-}> = ({ user, SheetCloseComponent }) => {
+}> = ({ user, SheetCloseComponent, session }) => {
   const [isUsernameValid, setIsUsernameValid] = useState(true);
   const [isUsernameLoading, setIsUsernameLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -60,7 +65,7 @@ export const UserEditProfileForm: FC<{
   const { profileUrl, coverUrl, coverId, profileId } = uploadedDetails;
   const { usernameError, bioError, websiteError } = formErrors;
   const { username, bio, website, websiteName } = formDetails;
-const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   const updateFormDetails = (key: string, value: string) => {
     setFormDetails((prev) => ({ ...prev, [key]: value }));
   };
@@ -68,7 +73,6 @@ const queryClient = useQueryClient();
     setFormErrors((prev) => ({ ...prev, [key]: value }));
   };
 
-  ;
   const fileSelector = (fileRef: React.RefObject<HTMLInputElement>) => {
     if (fileRef.current) {
       fileRef.current.click();
@@ -79,7 +83,10 @@ const queryClient = useQueryClient();
     isProfile: boolean
   ) => {
     const fileInput = event.target;
-
+    if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT)
+      return createError(
+        "Your account has been blocked due to multiple violations."
+      );
     if (!fileInput.files || fileInput.files.length === 0) {
       createError("No file selected.");
       return;
@@ -95,6 +102,15 @@ const queryClient = useQueryClient();
     if (file.type !== "image/jpeg") {
       createError("Please upload a JPG or JPEG image.", "Invalid image type");
       return;
+    }
+
+    const result = await verifyMedia(file);
+
+    if (!result.safe) {
+      const { error, success } = await increaseSuspendCount();
+      if (error || !success)
+        return createError(error || "Media failed content moderation");
+      return createError(result.error || "Media failed content moderation");
     }
 
     setUploading(true);
@@ -219,6 +235,10 @@ const queryClient = useQueryClient();
     updateFormDetails(key, value);
   };
   const submitHandler = async () => {
+    if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT)
+      return createError(
+        "Your account has been blocked due to multiple violations."
+      );
     if (uploading) return createError("Picture still uploading");
 
     // if (!profileId || !profileUrl) {
@@ -227,7 +247,17 @@ const queryClient = useQueryClient();
     // if (!bio || !username) {
     //   return createError("Bio and username are required.");
     // }
-    if(!bio && !username && !website && !websiteName && !profileId && !profileUrl && !coverId && !coverUrl) return createError("No changes made.");
+    if (
+      !bio &&
+      !username &&
+      !website &&
+      !websiteName &&
+      !profileId &&
+      !profileUrl &&
+      !coverId &&
+      !coverUrl
+    )
+      return createError("No changes made.");
     if (usernameError) return createError(usernameError);
     if (bioError) return createError(bioError);
     if (websiteError) return createError(websiteError);
@@ -238,16 +268,15 @@ const queryClient = useQueryClient();
         user.id,
         formDetails,
         uploadedDetails
-        
       );
       const { error, success } = data;
       if (error) {
         createError(error);
-        
+
         return;
       }
       if (success) {
-         await queryClient.invalidateQueries(
+        await queryClient.invalidateQueries(
           {
             queryKey: ["user", user.id],
             exact: true,
@@ -257,7 +286,7 @@ const queryClient = useQueryClient();
             throwOnError: true,
             cancelRefetch: true,
           }
-        )
+        );
         createSimple(success);
         setUploadedDetails({
           profileUrl: null,
@@ -272,9 +301,8 @@ const queryClient = useQueryClient();
           websiteName: "",
         });
         if (sheetCloseRef.current) {
-          sheetCloseRef.current.click(); 
+          sheetCloseRef.current.click();
         }
-      
       }
     } catch (error) {
       console.error("Error submitting details", error);
@@ -519,22 +547,22 @@ const queryClient = useQueryClient();
         />
       </div>
       <Button
-          type="submit"
-          disabled={uploading || submitLoading || isUsernameLoading}
-          onClick={submitHandler}
-          // onClick={() => alert("Button clicked")}
-          className="w-full items-center justify-center"
-        >
-          {submitLoading ? (
-            <>
-              <Loader className="mr-1 h-4 w-4 animate-spin" /> Please wait...
-            </>
-          ) : (
-            "Complete"
-          )}
-        </Button>
-     
-    <SheetCloseComponent ref={sheetCloseRef} /> 
+        type="submit"
+        disabled={uploading || submitLoading || isUsernameLoading}
+        onClick={submitHandler}
+        // onClick={() => alert("Button clicked")}
+        className="w-full items-center justify-center"
+      >
+        {submitLoading ? (
+          <>
+            <Loader className="mr-1 h-4 w-4 animate-spin" /> Please wait...
+          </>
+        ) : (
+          "Complete"
+        )}
+      </Button>
+
+      <SheetCloseComponent ref={sheetCloseRef} />
     </div>
   );
 };

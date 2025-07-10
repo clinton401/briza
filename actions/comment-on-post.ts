@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import getServerUser from "@/hooks/get-server-user";
 import { rateLimit } from "@/lib/rate-limits";
 import { unknown_error, unauthorized_error } from "@/lib/variables";
+import { MAX_SUSPEND_COUNT } from "@/lib/auth-utils";
 const commentError = (error: string) => ({
   error,
   success: false,
@@ -21,11 +22,17 @@ export const commentOnPost = async (
     return commentError(unauthorized_error);
   }
 
+  if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT) {
+    return commentError(
+      "Your account has been blocked due to multiple violations.",
+    );
+  }
   if (content.trim().length < 1) {
     return commentError(
       "Your comment must contain at least one letter or character."
     );
   }
+
 
   const rateLimitResult = rateLimit(session.id, true, { maxRequests: 30 });
   if (rateLimitResult.error) {

@@ -6,6 +6,7 @@ import { createErrorResponse } from "@/lib/random-utils";
 import { unknown_error, unauthorized_error } from "@/lib/variables";
 import getServerUser from "@/hooks/get-server-user";
 import { rateLimit } from "@/lib/rate-limits";
+import { MAX_SUSPEND_COUNT } from "@/lib/auth-utils";
 
 type FormDetails = {
   username?: string;
@@ -65,6 +66,9 @@ export const editProfileDetails = async (
   try {
     const session = await getServerUser();
     if (!session) return createErrorResponse(unauthorized_error);
+     if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT) {
+       return createErrorResponse("Your account has been blocked due to multiple violations.");
+        }
     const { error } = rateLimit(session.id, true);
     if(error){
       return createErrorResponse(error);

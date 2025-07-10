@@ -1,12 +1,15 @@
 import { FC } from "react";
 import { notable } from "@/lib/fonts";
 import { CompleteProfileForm } from "@/components/auth/complete-profile-form";
+import getServerUser from "@/hooks/get-server-user";
 export const metadata = {
   title: 'Complete Your Profile',
   description: 'Set up your Briza profile to start sharing and connecting with others on the platform.',
 };
 
-const CompleteProfilePage: FC = () => {
+const CompleteProfilePage: FC = async() => {
+  const session = await getServerUser();
+  if (!session) return;
    
   return (
     <div className="flex flex-col items-center px-p-half py-8  min-h-dvh w-full ">
@@ -15,7 +18,7 @@ const CompleteProfilePage: FC = () => {
            Complete your profile
           </h2>
           
-      <CompleteProfileForm/>
+        <CompleteProfileForm session={session} />
       </div>
     </div>
   );

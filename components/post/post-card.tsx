@@ -105,6 +105,7 @@ export const PostCard: FC<{
     time: post_time,
     year: post_year,
   } = dateHandler(createdAt);
+  const isCurrentYear =  post_year === new Date().getFullYear() ;
   const newMetrics = {
     id: metrics.id,
     postId: metrics.postId,
@@ -371,8 +372,10 @@ export const PostCard: FC<{
                 </h6>
               ) : (
                 <h6 className="text-xs flex items-center gap-1">
-                  <span> {postMonthText.slice(0, 3)}</span>
-                  <span>{postDay}</span>
+                  <span> {postMonthText.slice(0, 3)} </span>
+                  <span>
+                    {postDay} {!isCurrentYear && <>,  {post_year}</>}
+                   </span>
                 </h6>
               )}
             </>
@@ -425,7 +428,8 @@ export const PostCard: FC<{
             {isHomePage ? (
               <>
                 {formatContent(
-                  expanded ? content : content.slice(0, maxLength), searchQuery
+                  expanded ? content : content.slice(0, maxLength),
+                  searchQuery
                 )}
                 {content.length > maxLength && !expanded && (
                   <Button

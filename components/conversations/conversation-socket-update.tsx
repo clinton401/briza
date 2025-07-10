@@ -66,7 +66,7 @@ export const ConversationSocketUpdate: FC<{
         }
       };
       channel.on('system', { event: 'reconnected' }, () => {
-        console.log('Reconnected to Supabase Realtime!');
+        // console.log('Reconnected to Supabase Realtime!');
         handleReconnect();
       });
       channel.on(

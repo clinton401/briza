@@ -5,6 +5,7 @@ import { updateUser, findUnique } from "@/data/users";
 import { unauthorized_error, unknown_error } from "@/lib/variables";
 import { hasAtLeastOneProperty } from "@/lib/random-utils";
 import { z } from "zod";
+import {MAX_SUSPEND_COUNT} from "@/lib/auth-utils";
 // import { signIn } from "@/auth";
 
 const profileFormSchema = z.object({
@@ -32,6 +33,10 @@ export const updateSettingsDetails = async (details: z.infer<typeof profileFormS
     if (!session) {
         return unauthorized_error;
     }
+    
+    if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT) {
+        return "Your account has been blocked due to multiple violations.";
+    }
     const values = profileFormSchema.safeParse(details);
     if (!values.success) {
 
@@ -55,7 +60,6 @@ export const updateSettingsDetails = async (details: z.infer<typeof profileFormS
         }
        
 
-        console.log({validData})
         const user = await updateUser(session.id, validData);
         if (!user) {
             return "Failed to update user settings.";

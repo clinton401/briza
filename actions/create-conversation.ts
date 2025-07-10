@@ -4,10 +4,15 @@ import { unknown_error, unauthorized_error } from "@/lib/variables";
 import getServerUser from "@/hooks/get-server-user";
 import { rateLimit } from "@/lib/rate-limits";
 import { prisma } from "@/lib/db";
+import { MAX_SUSPEND_COUNT } from "@/lib/auth-utils";
 
 export const createConversation = async (recipientId: string) => {
     const session = await getServerUser();
     if (!session) return createNormalError(unauthorized_error);
+
+    if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT) {
+        return createNormalError("Your account has been blocked due to multiple violations.");
+    }
 
     const { error } = rateLimit(session.id, true);
     if (error) return createNormalError(error);

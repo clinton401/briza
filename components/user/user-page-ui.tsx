@@ -209,7 +209,7 @@ const tabs = ["Posts", "Likes", "Bookmarks"]
     
         
         </Button>
-        </> :  <UserEditSheet user={user}/>}
+          </> : <UserEditSheet user={user} session={session} />}
         </div>
       
       </section>

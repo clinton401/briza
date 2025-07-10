@@ -5,6 +5,7 @@ import getServerUser from "@/hooks/get-server-user";
 import { unauthorized_error, unknown_error } from "@/lib/variables";
 
 import { rateLimit } from "@/lib/rate-limits";
+import { MAX_SUSPEND_COUNT } from "@/lib/auth-utils";
 type CreatePostTypes = {
   content: string;
   audience: "PUBLIC" | "FOLLOWERS";
@@ -26,6 +27,9 @@ enum MediaType {
 export const createPost = async (postData: CreatePostTypes) => {
   const session = await getServerUser();
   if (!session) return createPostError(unauthorized_error);
+  if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT) {
+    return createPostError("Your account has been blocked due to multiple violations.");
+  }
   const {
     content,
     audience,

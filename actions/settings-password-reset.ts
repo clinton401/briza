@@ -5,6 +5,7 @@ import { unknown_error, user_not_found, unauthorized_error } from "@/lib/variabl
 import { rateLimit } from "@/lib/rate-limits";
 import getServerUser from "@/hooks/get-server-user";
 import { validatePassword } from "@/lib/password-utils";
+import {MAX_SUSPEND_COUNT} from "@/lib/auth-utils";
 
 
 const passwordFormSchema = z
@@ -28,7 +29,10 @@ type PasswordFormValues = z.infer<typeof passwordFormSchema>
 export const settingsPasswordReset = async (data: PasswordFormValues) => {
 
     const session = await getServerUser();
-    if (!session) return unauthorized_error;
+  if (!session) return unauthorized_error;
+  if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT) {
+    return "Your account has been blocked due to multiple violations.";
+  }
 
     const result = passwordFormSchema.safeParse(data);
     if (!result.success) {

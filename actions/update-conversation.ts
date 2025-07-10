@@ -2,6 +2,7 @@
 import { prisma } from "@/lib/db";
 import { unauthorized_error, unknown_error } from "@/lib/variables";
 import getServerUser from "@/hooks/get-server-user";
+import {MAX_SUSPEND_COUNT} from "@/lib/auth-utils";
 
 
 export const updateConversation = async (id: string, key: "isBlocked" | "isDeleted", value: boolean) => {
@@ -10,6 +11,9 @@ export const updateConversation = async (id: string, key: "isBlocked" | "isDelet
         // const {isBlocked, isDeleted} = data;
         const session = await getServerUser();
         if (!session) return unauthorized_error;
+        if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT) {
+            return "Your account has been blocked due to multiple violations.";
+        }
 
         const userId = session.id;
         const conversation = await prisma.conversation.findFirst({

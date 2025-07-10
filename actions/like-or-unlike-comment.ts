@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import getServerUser from "@/hooks/get-server-user";
 import { rateLimit } from "@/lib/rate-limits";
 import { unknown_error, unauthorized_error } from "@/lib/variables";
+import { MAX_SUSPEND_COUNT } from "@/lib/auth-utils";
 
 export const likeOrUnlikeComment = async (value: boolean, commentId: string, commentOwnerId: string, postId: string) => {
   const session = await getServerUser();
@@ -11,6 +12,9 @@ export const likeOrUnlikeComment = async (value: boolean, commentId: string, com
       error: unauthorized_error,
       success: false,
     };
+  }
+  if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT) {
+    return { error: "Your account has been blocked due to multiple violations.", success: false };
   }
 
   const rateLimitResult = rateLimit(session.id, true, { maxRequests: 15 });

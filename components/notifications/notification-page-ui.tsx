@@ -25,7 +25,7 @@ type NewNotificationEvent = {
   id: string;
   isRead: boolean;
   triggeredById: string;
-  type: NotificationType;
+  type: NotificationType;blo
   url: string;
   userId: string;
 };

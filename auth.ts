@@ -104,7 +104,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           token.suspendedDate = user.suspendedDate;
           token.suspendReason = user.suspendReason;
           token.lastLogin = user.lastLogin;
-          token.googleId = user.googleId;
+          // token.googleId = user.googleId;
           token.twoFactorAuthentication = user.twoFactorAuthentication;
 token.blueCheckVerified = user.blueCheckVerified;
           token.createdAt = user.createdAt;
@@ -121,9 +121,9 @@ token.blueCheckVerified = user.blueCheckVerified;
         if(token.email) {
           session.user.email = token.email
         }
-        if(token.googleId) {
-          session.user.googleId = token.googleId
-        }
+        // if(token.googleId) {
+        //   session.user.googleId = token.googleId
+        // }
         if(token.twoFactorAuthentication) {
           session.user.twoFactorAuthentication = token.twoFactorAuthentication
         }

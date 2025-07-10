@@ -18,9 +18,17 @@ import { createPost } from "@/actions/create-post";
 import { unknown_error } from "@/lib/variables";
 import handleTextAreaHeight from "@/hooks/handle-text-area-height";
 import { useQueryClient } from '@tanstack/react-query';
+import {verifyMedia} from "@/lib/verify-media";
+import { increaseSuspendCount } from "@/actions/increase-suspend-count";
+import { MAX_SUSPEND_COUNT } from "@/lib/auth-utils";
 // type EmojiData = {
 //   emoji: string;
 // };
+interface UploadMediaDetails {
+  url: string | null;
+  publicId: string | null;
+  error: string | null;
+}
 export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, closeHandler?: () => void }> = ({ session, borderNeeded = true, closeHandler }) => {
   const [content, setContent] = useState("");
   const [isPostPending, setIsPostPending] = useState(false);
@@ -56,20 +64,47 @@ export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, cl
   //   setContent(`${textBeforeCursor}${emoji}${textAfterCursor}`);
   // };
 
+
+
   const uploadToCloudinary = async (
-    image: File,
-    type = "image"
-  ): Promise<UploadedMediaDetails | null> => {
+    file: File,
+    type: "image" | "video" = "image"
+  ): Promise<UploadMediaDetails> => {
+    if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT)
+      return {
+        error: "Your account has been blocked due to multiple violations.",
+        url: null,
+        publicId: null
+      };
     const upload_preset = process.env.NEXT_PUBLIC_CLOUDINARY_PRESET_NAME;
     const cloud_name = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
     if (!upload_preset || !cloud_name) {
-      throw new Error("Cloudinary configuration is not set");
-      return null;
+      return {
+        url: null,
+        error: "Cloudinary configuration is not set",
+        publicId: null,
+      };
+    }
+
+    const result = await verifyMedia(file);
+
+    if (!result.safe) {
+      const { error, success } = await increaseSuspendCount();
+      if (error || !success) return {
+        url: null,
+        error: error || "Media failed content moderation",
+        publicId: null, 
+      }
+      return {
+        url: null,
+        error: result.error || "Media failed content moderation",
+        publicId: null,
+      };
     }
 
     const formData = new FormData();
-    formData.append("file", image);
+    formData.append("file", file);
     formData.append("upload_preset", upload_preset);
 
     try {
@@ -86,16 +121,23 @@ export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, cl
       return {
         url: response.data.secure_url,
         publicId: response.data.public_id,
+        error: null,
       };
     } catch (error) {
-      console.error("Error uploading image to Cloudinary:", error);
-      return null;
+      console.error("Error uploading to Cloudinary:", error);
+      return {
+        url: null,
+        error: "Failed to upload to Cloudinary",
+        publicId: null,
+      };
     }
   };
+  
 
   const handleImageChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+     if(session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT)  return createError("Your account has been blocked from uploading media due to multiple violations.");
     const fileInput = event.target;
     if (isPostPending)
       return createError(
@@ -134,16 +176,28 @@ export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, cl
       const uploadPromises = files.map((image) =>
         uploadToCloudinary(image).catch((error) => {
           console.error(`Error uploading image:`, error);
-          return null;
+          return { url: null, error: "Upload failed", publicId: null };
         })
       );
+      
       const results = await Promise.all(uploadPromises);
-      const successfulUploads = results.filter((upload) => {
-        return upload !== null;
-      });
-      const uploadsWithCorrectDetails = successfulUploads.filter((upload) => {
-        return upload.publicId && upload.url;
-      });
+      const uploadsWithCorrectDetails = results
+        .map((upload) => {
+          return {
+            url: upload.url,
+            publicId: upload.publicId,
+          };
+        })
+        .filter(
+          ({ url, publicId }) =>
+            url && publicId && url !== null && publicId !== null
+        )   as UploadedMediaDetails[]
+// const uploadsWithCorrectDetails = successfulUploads.filter(
+//   (upload) => upload.publicId && upload.url
+// );
+
+
+
 
       if (uploadsWithCorrectDetails.length > 0) {
         if (uploadsWithCorrectDetails.length < files.length) {
@@ -158,7 +212,17 @@ export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, cl
           ...uploadsWithCorrectDetails,
         ]);
       } else {
-        createError("No valid images were uploaded.");
+        const moderationFailures = results.filter((upload) =>
+          upload.error?.includes("moderation")
+        );
+        if (moderationFailures.length > 0) {
+          createError(
+            `${moderationFailures.length} image(s) failed content moderation.`
+          );
+        } else {
+          createError("No valid images were uploaded.");
+        }
+        setMediaType("NONE");
       }
     } catch (error) {
       console.error(`Unable to upload images: ${error}`);
@@ -170,6 +234,7 @@ export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, cl
   const handleVideoChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+     if(session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT)  return createError("Your account has been blocked from uploading media due to multiple violations.");
     const fileInput = event.target;
     if (isPostPending)
       return createError(
@@ -221,13 +286,13 @@ export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, cl
       setUploadedImagesDetails([]);
 
       const videoDetails = await uploadToCloudinary(videoFile, "video");
-
-      if (videoDetails === null) {
-        createError("Failed to upload video.");
+      if (!videoDetails || !videoDetails.url  || !videoDetails.publicId) {
+        createError(videoDetails?.error || "Failed to upload video.");
+        setMediaType("NONE");
         return;
       }
 
-      setUploadedVideoDetails(videoDetails);
+      setUploadedVideoDetails({url: videoDetails.url, publicId: videoDetails.publicId});
 
       createSimple("Video uploaded successfully!");
     } catch (error) {
@@ -287,6 +352,7 @@ export const CreatePostUI: FC<{ session: SessionType, borderNeeded?: boolean, cl
   };
   
   const submitHandler = async () => {
+     if(session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT)  return createError("Your account has been blocked due to multiple violations.");
     if (isPostPending)
       return createError(
         "Post is being sent. Please wait until it's completed."

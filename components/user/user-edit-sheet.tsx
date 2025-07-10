@@ -14,9 +14,9 @@ import {
 } from "@/components/ui/sheet";
 // import { CompleteProfileForm } from "../auth/complete-profile-form";
 import {UserEditProfileForm} from "@/components/user/user-edit-profile-form";
-import {UserResponse} from "@/lib/types"
+import {UserResponse, SessionType} from "@/lib/types"
 
-export const UserEditSheet: FC<{user: UserResponse}> =({user}) =>  {
+export const UserEditSheet: FC<{user: UserResponse, session: SessionType}> =({user, session}) =>  {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -43,7 +43,7 @@ export const UserEditSheet: FC<{user: UserResponse}> =({user}) =>  {
             <Input id="username" value="@peduarte" className="col-span-3" />
           </div>
         </div> */}
-        <UserEditProfileForm SheetCloseComponent={SheetClose} user={user}/>
+        <UserEditProfileForm SheetCloseComponent={SheetClose} user={user} session={session} />
         {/* <SheetFooter>
           <SheetClose asChild>
             <Button type="submit">Save changes</Button>

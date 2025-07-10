@@ -2,13 +2,18 @@
 import { prisma } from "@/lib/db";
 import getServerUser from "@/hooks/get-server-user";
 import { unauthorized_error } from "@/lib/variables";
+import { MAX_SUSPEND_COUNT } from "@/lib/auth-utils";
 
 export const deleteUserAccount = async () => {
   
     try {
         const session = await getServerUser();
+
         if (!session) {
             return { success: false, message: unauthorized_error };
+        }
+        if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT) {
+            return { success: false, message: "Your account has been blocked due to multiple violations." };
         }
         const userId = session.id;
         await prisma.user.delete({

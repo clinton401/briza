@@ -21,7 +21,7 @@ export function AppearanceSettings() {
 
         <Separator />
         <div className="space-y-4">
-      <div className="text-sm font-medium">Theme</div>
+      <div className="text-sm font -medium">Theme</div>
       <div className="text-sm text-muted-foreground">Select the theme for the dashboard.</div>
       <RadioGroup value={theme} onValueChange={setTheme} className="grid grid-cols-3 gap-4">
         <div>

@@ -7,6 +7,7 @@ import { unknown_error, unauthorized_error } from "@/lib/variables";
 import getServerUser from "@/hooks/get-server-user";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import {prisma} from "@/lib/db"
+import { MAX_SUSPEND_COUNT } from "@/lib/auth-utils";
 type FormDetails = {
   username: string;
   bio: string;
@@ -59,7 +60,12 @@ export const completeProfileDetails = async (
 ) => {
   try {
     const session = await getServerUser();
-    if (!session) return createErrorResponse(unauthorized_error, `/login${redirect ? `?redirect=${redirect}`: ""}`);
+    if (!session) return createErrorResponse(unauthorized_error, `/login${redirect ? `?redirect=${redirect}` : ""}`);
+    if (session.suspendCount && session.suspendCount >= MAX_SUSPEND_COUNT) {
+      return createErrorResponse(
+        "Your account has been blocked due to multiple violations.",
+      );
+    }
     const validatedFormDetails = FormDetailsSchema.safeParse(formDetails);
     const validatedUploadedDetails =
       UploadedDetailsSchema.safeParse(uploadedDetails);
@@ -69,6 +75,9 @@ export const completeProfileDetails = async (
       );
     if (!validatedUploadedDetails.success)
       return createErrorResponse("Profile URL and Profile ID are required.");
+
+    
+
     const { username, bio, website, websiteName } = validatedFormDetails.data;
     const { profileUrl, profileId, coverUrl, coverId } =
       validatedUploadedDetails.data;

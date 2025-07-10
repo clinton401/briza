@@ -92,11 +92,21 @@ export async function GET(req: Request) {
         prisma.message.count({
           where: {
             content: { contains: query, mode: "insensitive" },
+            conversation: {
+              userStatuses: {
+                some: { userId, isDeleted: false },
+              },
+            },
           },
         }),
         prisma.message.findMany({
           where: {
             content: { contains: query, mode: "insensitive" },
+            conversation: {
+              userStatuses: {
+                some: { userId, isDeleted: false },
+              },
+            },
           },
           include: {
             conversation: {
@@ -141,6 +151,7 @@ export async function GET(req: Request) {
         ...pages,
       });
     }
+    
 
     return NextResponse.json({ error: "Invalid filter" }, { status: 400 });
   } catch (error) {

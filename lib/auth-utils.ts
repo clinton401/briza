@@ -23,3 +23,5 @@ export const otpGenerator = (is10Mins?: boolean) => {
 export const hasExpired = (expiresAt: Date): boolean => {
   return expiresAt < new Date(); 
 };
+
+export const MAX_SUSPEND_COUNT = 3;
