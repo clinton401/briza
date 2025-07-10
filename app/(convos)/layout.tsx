@@ -14,7 +14,7 @@ export default function ConvoLayout({
 
       <ConversationWrapper />
 
-      <div className="w-full lg:pl-[22rem]">{children}</div>
+      <div className=" lg:pl-[22rem]">{children}</div>
     </>
   );
 }
